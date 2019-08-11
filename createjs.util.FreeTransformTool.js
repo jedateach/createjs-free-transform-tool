@@ -6,10 +6,10 @@ this.createjs.util = this.createjs.util || {};
 // class
 (function() {
 
-    var FreeTranformTool = function(lineColor, dashed, color, size) {
+    var FreeTransformTool = function(lineColor, dashed, color, size) {
         this.initialize(lineColor, dashed, color, size);
     };
-    var p = FreeTranformTool.prototype = new createjs.Container();
+    var p = FreeTransformTool.prototype = new createjs.Container();
 
     // public properties:    
     p.moveTool = null;
@@ -351,5 +351,5 @@ this.createjs.util = this.createjs.util || {};
         return true;
     };
 
-    createjs.util.FreeTranformTool = FreeTranformTool;
+    createjs.util.FreeTransformTool = FreeTransformTool;
 }());

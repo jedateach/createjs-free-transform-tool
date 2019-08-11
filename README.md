@@ -23,7 +23,7 @@ In order to use this tool you have to do the following:
 2. add the transform tool inside the top layer as the follwing:
 
     ```js
-    var selectTool = new createjs.util.FreeTranformTool();
+    var selectTool = new createjs.util.FreeTransformTool();
     selectTool.name = "transform";
     top.addChild(selectTool);
     ```

@@ -25,7 +25,7 @@ function init() {
 	var top = new createjs.Container();
 	top.name = "top";
 	stage.addChild(top);
-	selectTool = new createjs.util.FreeTranformTool();
+	selectTool = new createjs.util.FreeTransformTool();
 	selectTool.name = "transform";
 	top.addChild(selectTool);
 
