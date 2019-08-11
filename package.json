@@ -1,0 +1,23 @@
+{
+  "name": "createjs-free-transform-tool",
+  "version": "1.0.0",
+  "description": "Provides ability to free transform CreateJS Display Objects",
+  "main": "createjs.util.FreeTransformTool.js",
+  "scripts": {
+    "start": "http-server .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jedateach/createjs-free-transform-tool.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jedateach/createjs-free-transform-tool/issues"
+  },
+  "homepage": "https://github.com/jedateach/createjs-free-transform-tool#readme",
+  "devDependencies": {
+    "http-server": "^0.11.1"
+  }
+}
