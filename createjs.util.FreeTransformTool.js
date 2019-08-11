@@ -257,16 +257,21 @@ this.createjs.util = this.createjs.util || {};
             this.rotation = target.rotation;
 
             // borders
-            var dashLineX = this.dashed ? this.width / 11 : this.width;
-            var dashLineY = this.dashed ? this.height / 11 : this.height;
-            this.border.graphics.clear()
-                    .beginStroke(this.border.color)
-                    .setStrokeStyle(2 / this.scaleY)
-                    .dashedLineTo(-this.width / 2, -this.height / 2, this.width / 2, -this.height / 2, dashLineX)
-                    .dashedLineTo(-this.width / 2, this.height / 2, this.width / 2, this.height / 2, dashLineX)
+            this.border.graphics.clear();
+            if(this.dashed) {
+                this.border.graphics.setStrokeDash([5, 5], 0);
+            } 
+            this.border.graphics.beginStroke(this.border.color)
+                .setStrokeStyle(1 / this.scaleY)
+                .moveTo(-this.width / 2, -this.height / 2)
+                .lineTo(this.width / 2, -this.height / 2)
+                .moveTo(-this.width / 2, this.height / 2)
+                .lineTo(this.width / 2, this.height / 2)
                     .setStrokeStyle(2 / this.scaleX)
-                    .dashedLineTo(-this.width / 2, -this.height / 2, -this.width / 2, this.height / 2, dashLineY)
-                    .dashedLineTo(this.width / 2, -this.height / 2, this.width / 2, this.height / 2, dashLineY);
+                .moveTo(-this.width / 2, -this.height / 2)
+                .lineTo( -this.width / 2, this.height / 2)
+                .moveTo(this.width / 2, -this.height / 2)
+                .lineTo( this.width / 2, this.height / 2);
 
             // tools scale
             var toolScaleX = 1 / (this.scaleX * this.stage.scaleX);
