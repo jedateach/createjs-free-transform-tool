@@ -55,27 +55,27 @@ this.createjs.util = this.createjs.util || {};
         this.moveTool.graphics.beginStroke(lineColor).setStrokeStyle(2).beginFill(color).drawEllipse(0, 0, controlsSize, controlsSize);
         this.moveTool.x = this.moveTool.regX = controlsSize / 2;
         this.moveTool.y = this.moveTool.regY = controlsSize / 2;
-        this.moveTool.addEventListener("mouseover", function() {
+        this.moveTool.on("mouseover", function() {
             that.setTitle('Move');
             that.setCursor('move');
         });
-        this.moveTool.addEventListener("mouseout", function() {
+        this.moveTool.on("mouseout", function() {
             that.setTitle();
             that.setCursor('default');
         });
-        this.moveTool.addEventListener("mousedown", function(evt) {
+        this.moveTool.on("mousedown", function(evt) {
             if (that.target) {
                 var me = evt.currentTarget;
                 var scale = that.stage.scaleX;
                 var startPoint = {x: that.target.x, y: that.target.y};
-                me.addEventListener("pressmove", function(e) {
+                me.on("pressmove", function(e) {
                     var h = (e.stageX - evt.stageX) / scale;
                     var v = (e.stageY - evt.stageY) / scale;
                     that.target.x = startPoint.x + h;
                     that.target.y = startPoint.y + v;
                     that.stage.update();
                 });
-                me.addEventListener("pressup", function() {
+                me.on("pressup", function() {
                     me.removeAllEventListeners("pressmove");
                 });
             }
@@ -88,15 +88,15 @@ this.createjs.util = this.createjs.util || {};
         this.hScaleTool.x = this.hScaleTool.regX = controlsSize / 2;
         this.hScaleTool.y = this.hScaleTool.regY = controlsSize / 2;
         this.hScaleTool.alpha = 0.8;
-        this.hScaleTool.addEventListener("mouseover", function() {
+        this.hScaleTool.on("mouseover", function() {
             that.setTitle('Resize');
             that.setCursor('e-resize');
         });
-        this.hScaleTool.addEventListener("mouseout", function() {
+        this.hScaleTool.on("mouseout", function() {
             that.setTitle();
             that.setCursor('default');
         });
-        this.hScaleTool.addEventListener("mousedown", function(evt) {
+        this.hScaleTool.on("mousedown", function(evt) {
             if (that.target) {
                 var me = evt.currentTarget;
                 var scale = that.stage.scaleX;
@@ -104,14 +104,14 @@ this.createjs.util = this.createjs.util || {};
                 var startWidth = that.target.getBounds().width * startScaleX / 2;
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                me.addEventListener("pressmove", function(e) {
+                me.on("pressmove", function(e) {
                     var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var h = (eRotate.x - evtRotate.x) / scale;
                     var hScale = (startScaleX / startWidth) * (startWidth + h);
                     that.target.scaleX = hScale;
                     that.stage.update();
                 });
-                me.addEventListener("pressup", function() {
+                me.on("pressup", function() {
                     me.removeAllEventListeners("pressmove");
                 });
             }
@@ -123,15 +123,15 @@ this.createjs.util = this.createjs.util || {};
         this.vScaleTool.graphics.beginStroke(lineColor).setStrokeStyle(2).beginFill(color).drawRect(0, 0, controlsSize, controlsSize);
         this.vScaleTool.x = this.vScaleTool.regX = controlsSize / 2;
         this.vScaleTool.y = this.vScaleTool.regY = controlsSize / 2;
-        this.vScaleTool.addEventListener("mouseover", function() {
+        this.vScaleTool.on("mouseover", function() {
             that.setTitle('Resize');
             that.setCursor('s-resize');
         });
-        this.vScaleTool.addEventListener("mouseout", function() {
+        this.vScaleTool.on("mouseout", function() {
             that.setTitle();
             that.setCursor('default');
         });
-        this.vScaleTool.addEventListener("mousedown", function(evt) {
+        this.vScaleTool.on("mousedown", function(evt) {
             if (that.target) {
                 var me = evt.currentTarget;
                 var scale = that.stage.scaleY;
@@ -139,14 +139,14 @@ this.createjs.util = this.createjs.util || {};
                 var startHeight = that.target.getBounds().height * startScaleY / 2;
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                me.addEventListener("pressmove", function(e) {
+                me.on("pressmove", function(e) {
                     var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var v = (eRotate.y - evtRotate.y) / scale;
                     var vScale = (startScaleY / startHeight) * (startHeight + v);
                     that.target.scaleY = vScale;
                     that.stage.update();
                 });
-                me.addEventListener("pressup", function() {
+                me.on("pressup", function() {
                     me.removeAllEventListeners("pressmove");
                 });
             }
@@ -158,15 +158,15 @@ this.createjs.util = this.createjs.util || {};
         this.scaleTool.graphics.beginStroke(lineColor).setStrokeStyle(2).beginFill(color).drawRect(0, 0, controlsSize, controlsSize);
         this.scaleTool.x = this.scaleTool.regX = controlsSize / 2;
         this.scaleTool.y = this.scaleTool.regY = controlsSize / 2;
-        this.scaleTool.addEventListener("mouseover", function() {
+        this.scaleTool.on("mouseover", function() {
             that.setTitle('Resize');
             that.setCursor('se-resize');
         });
-        this.scaleTool.addEventListener("mouseout", function() {
+        this.scaleTool.on("mouseout", function() {
             that.setTitle();
             that.setCursor('default');
         });
-        this.scaleTool.addEventListener("mousedown", function(evt) {
+        this.scaleTool.on("mousedown", function(evt) {
             if (that.target) {
                 var me = evt.currentTarget;
                 var scale = that.stage.scaleX;
@@ -176,7 +176,7 @@ this.createjs.util = this.createjs.util || {};
                 var startHeight = that.target.getBounds().height * startScaleY / 2;
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                me.addEventListener("pressmove", function(e) {
+                me.on("pressmove", function(e) {
                     var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var h = (eRotate.x - evtRotate.x) / scale;
                     var v = (eRotate.y - evtRotate.y) / scale;
@@ -191,7 +191,7 @@ this.createjs.util = this.createjs.util || {};
                     that.target.scaleY = vScale;
                     that.stage.update();
                 });
-                me.addEventListener("pressup", function() {
+                me.on("pressup", function() {
                     me.removeAllEventListeners("pressmove");
                 });
             }
@@ -203,15 +203,15 @@ this.createjs.util = this.createjs.util || {};
         this.rotateTool.graphics.beginStroke(lineColor).setStrokeStyle(2).beginFill(color).drawEllipse(0, 0, controlsSize, controlsSize);
         this.rotateTool.x = this.rotateTool.regX = controlsSize / 2;
         this.rotateTool.y = this.rotateTool.regY = controlsSize / 2;
-        this.rotateTool.addEventListener("mouseover", function() {
+        this.rotateTool.on("mouseover", function() {
             that.setTitle('Rotate');
             that.setCursor('pointer');
         });
-        this.rotateTool.addEventListener("mouseout", function() {
+        this.rotateTool.on("mouseout", function() {
             that.setTitle();
             that.setCursor('default');
         });
-        this.rotateTool.addEventListener("mousedown", function(evt) {
+        this.rotateTool.on("mousedown", function(evt) {
             if (that.target) {
                 var me = evt.currentTarget;
                 var scale = that.stage.scaleX;
@@ -219,7 +219,7 @@ this.createjs.util = this.createjs.util || {};
                 var startPoint = {x: evt.localX + thisPoint.x, y: thisPoint.y + evt.localY};
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                me.addEventListener("pressmove", function(e) {
+                me.on("pressmove", function(e) {
                     var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var h = (eRotate.x - evtRotate.x) / scale;
                     var v = (eRotate.y - evtRotate.y) / scale;
@@ -228,14 +228,14 @@ this.createjs.util = this.createjs.util || {};
                     that.target.rotation = startRotation - angel;
                     that.stage.update();
                 });
-                me.addEventListener("pressup", function() {
+                me.on("pressup", function() {
                     me.removeAllEventListeners("pressmove");
                 });
             }
         });
         this.addChild(this.rotateTool);
         // update
-        this.addEventListener("tick", function() {
+        this.on("tick", function() {
             that.update();
         });
 
