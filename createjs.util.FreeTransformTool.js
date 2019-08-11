@@ -66,7 +66,7 @@ this.createjs.util = this.createjs.util || {};
         this.moveTool.addEventListener("mousedown", function(evt) {
             if (that.target) {
                 var me = evt.currentTarget;
-                var scale = that.getStage().scaleX;
+                var scale = that.stage.scaleX;
                 var startPoint = {x: that.target.x, y: that.target.y};
                 me.addEventListener("pressmove", function(e) {
                     var h = (e.stageX - evt.stageX) / scale;
@@ -98,7 +98,7 @@ this.createjs.util = this.createjs.util || {};
         this.hScaleTool.addEventListener("mousedown", function(evt) {
             if (that.target) {
                 var me = evt.currentTarget;
-                var scale = that.getStage().scaleX;
+                var scale = that.stage.scaleX;
                 var startScaleX = that.target.scaleX;
                 var startWidth = that.target.getBounds().width * startScaleX / 2;
                 var startRotation = that.target.rotation;
@@ -132,7 +132,7 @@ this.createjs.util = this.createjs.util || {};
         this.vScaleTool.addEventListener("mousedown", function(evt) {
             if (that.target) {
                 var me = evt.currentTarget;
-                var scale = that.getStage().scaleY;
+                var scale = that.stage.scaleY;
                 var startScaleY = that.target.scaleY;
                 var startHeight = that.target.getBounds().height * startScaleY / 2;
                 var startRotation = that.target.rotation;
@@ -166,7 +166,7 @@ this.createjs.util = this.createjs.util || {};
         this.scaleTool.addEventListener("mousedown", function(evt) {
             if (that.target) {
                 var me = evt.currentTarget;
-                var scale = that.getStage().scaleX;
+                var scale = that.stage.scaleX;
                 var startScaleX = that.target.scaleX;
                 var startScaleY = that.target.scaleY;
                 var startWidth = that.target.getBounds().width * startScaleX / 2;
@@ -210,7 +210,7 @@ this.createjs.util = this.createjs.util || {};
         this.rotateTool.addEventListener("mousedown", function(evt) {
             if (that.target) {
                 var me = evt.currentTarget;
-                var scale = that.getStage().scaleX;
+                var scale = that.stage.scaleX;
                 var thisPoint = {x: me.x * that.target.scaleX, y: me.y * that.target.scaleY};
                 var startPoint = {x: evt.localX + thisPoint.x, y: thisPoint.y + evt.localY};
                 var startRotation = that.target.rotation;
@@ -264,8 +264,8 @@ this.createjs.util = this.createjs.util || {};
                     .dashedLineTo(this.width / 2, -this.height / 2, this.width / 2, this.height / 2, dashLineY);
 
             // tools scale
-            var toolScaleX = 1 / (this.scaleX * this.getStage().scaleX);
-            var toolScaleY = 1 / (this.scaleY * this.getStage().scaleY);
+            var toolScaleX = 1 / (this.scaleX * this.stage.scaleX);
+            var toolScaleY = 1 / (this.scaleY * this.stage.scaleY);
 
             // set move tool
             this.moveTool.x = 0;
@@ -317,7 +317,7 @@ this.createjs.util = this.createjs.util || {};
 
     p.setTitle = function(title) {
         title = title || "";
-        this.getStage().canvas.title = title;
+        this.stage.canvas.title = title;
     };
 
     p.setCursor = function(cursor) {
