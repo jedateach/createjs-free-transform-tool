@@ -73,6 +73,7 @@ this.createjs.util = this.createjs.util || {};
                     var v = (e.stageY - evt.stageY) / scale;
                     that.target.x = startPoint.x + h;
                     that.target.y = startPoint.y + v;
+                    that.stage.update();
                 });
                 me.addEventListener("pressup", function() {
                     me.removeAllEventListeners("pressmove");
@@ -108,6 +109,7 @@ this.createjs.util = this.createjs.util || {};
                     var h = (eRotate.x - evtRotate.x) / scale;
                     var hScale = (startScaleX / startWidth) * (startWidth + h);
                     that.target.scaleX = hScale;
+                    that.stage.update();
                 });
                 me.addEventListener("pressup", function() {
                     me.removeAllEventListeners("pressmove");
@@ -142,6 +144,7 @@ this.createjs.util = this.createjs.util || {};
                     var v = (eRotate.y - evtRotate.y) / scale;
                     var vScale = (startScaleY / startHeight) * (startHeight + v);
                     that.target.scaleY = vScale;
+                    that.stage.update();
                 });
                 me.addEventListener("pressup", function() {
                     me.removeAllEventListeners("pressmove");
@@ -186,6 +189,7 @@ this.createjs.util = this.createjs.util || {};
                     }
                     that.target.scaleX = hScale;
                     that.target.scaleY = vScale;
+                    that.stage.update();
                 });
                 me.addEventListener("pressup", function() {
                     me.removeAllEventListeners("pressmove");
@@ -222,6 +226,7 @@ this.createjs.util = this.createjs.util || {};
                     var endPoint = {x: startPoint.x + h, y: startPoint.y + v};
                     var angel = (Math.atan2(endPoint.x, endPoint.y) - Math.atan2(startPoint.x, startPoint.y)) * 180 / Math.PI;
                     that.target.rotation = startRotation - angel;
+                    that.stage.update();
                 });
                 me.addEventListener("pressup", function() {
                     me.removeAllEventListeners("pressmove");
