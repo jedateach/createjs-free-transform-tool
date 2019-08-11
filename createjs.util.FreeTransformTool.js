@@ -100,7 +100,7 @@ this.createjs.util = this.createjs.util || {};
                 var me = evt.currentTarget;
                 var scale = that.getStage().scaleX;
                 var startScaleX = that.target.scaleX;
-                var startWidth = that.target.width * startScaleX / 2;
+                var startWidth = that.target.getBounds().width * startScaleX / 2;
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
                 me.addEventListener("pressmove", function(e) {
@@ -134,7 +134,7 @@ this.createjs.util = this.createjs.util || {};
                 var me = evt.currentTarget;
                 var scale = that.getStage().scaleY;
                 var startScaleY = that.target.scaleY;
-                var startHeight = that.target.height * startScaleY / 2;
+                var startHeight = that.target.getBounds().height * startScaleY / 2;
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
                 me.addEventListener("pressmove", function(e) {
@@ -169,8 +169,8 @@ this.createjs.util = this.createjs.util || {};
                 var scale = that.getStage().scaleX;
                 var startScaleX = that.target.scaleX;
                 var startScaleY = that.target.scaleY;
-                var startWidth = that.target.width * startScaleX / 2;
-                var startHeight = that.target.height * startScaleY / 2;
+                var startWidth = that.target.getBounds().width * startScaleX / 2;
+                var startHeight = that.target.getBounds().height * startScaleY / 2;
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
                 me.addEventListener("pressmove", function(e) {
@@ -242,8 +242,9 @@ this.createjs.util = this.createjs.util || {};
         if (target) {
             // copy object translation/transformation
             this.target = target;
-            this.width = target.width;
-            this.height = target.height;
+            var bounds = target.getBounds();
+            this.width = bounds.width;
+            this.height = bounds.height;
             this.scaleX = target.scaleX;
             this.scaleY = target.scaleY;
             this.x = target.x;
@@ -273,26 +274,26 @@ this.createjs.util = this.createjs.util || {};
             this.moveTool.scaleY = toolScaleY;
 
             // scale tool
-            this.scaleTool.x = target.width / 2;
-            this.scaleTool.y = target.height / 2;
+            this.scaleTool.x = bounds.width / 2;
+            this.scaleTool.y = bounds.height / 2;
             this.scaleTool.scaleX = toolScaleX;
             this.scaleTool.scaleY = toolScaleY;
 
             // hScale tool
-            this.hScaleTool.x = target.width / 2;
+            this.hScaleTool.x = bounds.width / 2;
             this.hScaleTool.y = 0;
             this.hScaleTool.scaleX = toolScaleX;
             this.hScaleTool.scaleY = toolScaleY;
 
             // hScale tool
             this.vScaleTool.x = 0;
-            this.vScaleTool.y = target.height / 2;
+            this.vScaleTool.y = bounds.height / 2;
             this.vScaleTool.scaleX = toolScaleX;
             this.vScaleTool.scaleY = toolScaleY;
 
             // rotate tool
-            this.rotateTool.x = target.width / 2;
-            this.rotateTool.y = -target.height / 2;
+            this.rotateTool.x = bounds.width / 2;
+            this.rotateTool.y = -bounds.height / 2;
             this.rotateTool.scaleX = toolScaleX;
             this.rotateTool.scaleY = toolScaleY;
 
