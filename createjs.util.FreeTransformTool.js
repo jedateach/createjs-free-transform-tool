@@ -259,6 +259,10 @@ this.createjs.util = this.createjs.util || {};
             this.y = target.y;
             this.rotation = target.rotation;
 
+            // respect registration point of target
+            this.regX = (-this.width / 2 ) + target.regX;
+            this.regY = (-this.height / 2)  + target.regY;
+
             // borders
             this.border.graphics.clear();
             if(this.dashed) {
