@@ -50,11 +50,22 @@ this.createjs.util = this.createjs.util || {};
         this.border.color = lineColor;
         this.addChild(this.border);
 
+        // create a transform control handle
+        var handleStrokeWidth = 1
+        function createHandle() {
+            var shape = new createjs.Shape();
+            shape.graphics
+                .beginStroke(lineColor)
+                .setStrokeStyle(handleStrokeWidth)
+                .beginFill(color);
+            shape.x = shape.regX = controlsSize / 2;
+            shape.y = shape.regY = controlsSize / 2;
+            return shape;
+        }
+
         // init move tool
-        this.moveTool = new createjs.Shape();
-        this.moveTool.graphics.beginStroke(lineColor).setStrokeStyle(2).beginFill(color).drawEllipse(0, 0, controlsSize, controlsSize);
-        this.moveTool.x = this.moveTool.regX = controlsSize / 2;
-        this.moveTool.y = this.moveTool.regY = controlsSize / 2;
+        this.moveTool = createHandle();
+        this.moveTool.graphics.drawRect(0, 0, controlsSize, controlsSize);
         this.moveTool.on("mouseover", function() {
             that.setTitle('Move');
             that.setCursor('move');
@@ -83,10 +94,8 @@ this.createjs.util = this.createjs.util || {};
         this.addChild(this.moveTool);
 
         // init hScale tool
-        this.hScaleTool = new createjs.Shape();
-        this.hScaleTool.graphics.beginStroke(lineColor).setStrokeStyle(2).beginFill(color).drawRect(0, 0, controlsSize, controlsSize);
-        this.hScaleTool.x = this.hScaleTool.regX = controlsSize / 2;
-        this.hScaleTool.y = this.hScaleTool.regY = controlsSize / 2;
+        this.hScaleTool = createHandle();
+        this.hScaleTool.graphics.drawRect(0, 0, controlsSize, controlsSize);
         this.hScaleTool.alpha = 0.8;
         this.hScaleTool.on("mouseover", function() {
             that.setTitle('Resize');
@@ -119,10 +128,8 @@ this.createjs.util = this.createjs.util || {};
         this.addChild(this.hScaleTool);
 
         // init vScale tool
-        this.vScaleTool = new createjs.Shape();
-        this.vScaleTool.graphics.beginStroke(lineColor).setStrokeStyle(2).beginFill(color).drawRect(0, 0, controlsSize, controlsSize);
-        this.vScaleTool.x = this.vScaleTool.regX = controlsSize / 2;
-        this.vScaleTool.y = this.vScaleTool.regY = controlsSize / 2;
+        this.vScaleTool = createHandle();
+        this.vScaleTool.graphics.drawRect(0, 0, controlsSize, controlsSize);
         this.vScaleTool.on("mouseover", function() {
             that.setTitle('Resize');
             that.setCursor('s-resize');
@@ -154,10 +161,8 @@ this.createjs.util = this.createjs.util || {};
         this.addChild(this.vScaleTool);
 
         // init scale tool
-        this.scaleTool = new createjs.Shape();
-        this.scaleTool.graphics.beginStroke(lineColor).setStrokeStyle(2).beginFill(color).drawRect(0, 0, controlsSize, controlsSize);
-        this.scaleTool.x = this.scaleTool.regX = controlsSize / 2;
-        this.scaleTool.y = this.scaleTool.regY = controlsSize / 2;
+        this.scaleTool = createHandle();
+        this.scaleTool.graphics.drawRect(0, 0, controlsSize, controlsSize);
         this.scaleTool.on("mouseover", function() {
             that.setTitle('Resize');
             that.setCursor('se-resize');
@@ -199,10 +204,8 @@ this.createjs.util = this.createjs.util || {};
         this.addChild(this.scaleTool);
 
         // init rotate tool
-        this.rotateTool = new createjs.Shape();
-        this.rotateTool.graphics.beginStroke(lineColor).setStrokeStyle(2).beginFill(color).drawEllipse(0, 0, controlsSize, controlsSize);
-        this.rotateTool.x = this.rotateTool.regX = controlsSize / 2;
-        this.rotateTool.y = this.rotateTool.regY = controlsSize / 2;
+        this.rotateTool = createHandle();
+        this.rotateTool.graphics.drawEllipse(0, 0, controlsSize, controlsSize);
         this.rotateTool.on("mouseover", function() {
             that.setTitle('Rotate');
             that.setCursor('pointer');
