@@ -76,18 +76,18 @@ this.createjs.util = this.createjs.util || {};
         });
         this.moveTool.on("mousedown", function(evt) {
             if (that.target) {
-                var me = evt.currentTarget;
+                var tool = evt.currentTarget;
                 var scale = that.stage.scaleX;
                 var startPoint = {x: that.target.x, y: that.target.y};
-                me.on("pressmove", function(e) {
+                tool.on("pressmove", function(e) {
                     var h = (e.stageX - evt.stageX) / scale;
                     var v = (e.stageY - evt.stageY) / scale;
                     that.target.x = startPoint.x + h;
                     that.target.y = startPoint.y + v;
                     that.stage.update();
                 });
-                me.on("pressup", function() {
-                    me.removeAllEventListeners("pressmove");
+                tool.on("pressup", function() {
+                    tool.removeAllEventListeners("pressmove");
                 });
             }
         });
@@ -107,21 +107,21 @@ this.createjs.util = this.createjs.util || {};
         });
         this.hScaleTool.on("mousedown", function(evt) {
             if (that.target) {
-                var me = evt.currentTarget;
+                var tool = evt.currentTarget;
                 var scale = that.stage.scaleX;
                 var startScaleX = that.target.scaleX;
                 var startWidth = that.target.getBounds().width * startScaleX / 2;
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                me.on("pressmove", function(e) {
+                tool.on("pressmove", function(e) {
                     var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var h = (eRotate.x - evtRotate.x) / scale;
                     var hScale = (startScaleX / startWidth) * (startWidth + h);
                     that.target.scaleX = hScale;
                     that.stage.update();
                 });
-                me.on("pressup", function() {
-                    me.removeAllEventListeners("pressmove");
+                tool.on("pressup", function() {
+                    tool.removeAllEventListeners("pressmove");
                 });
             }
         });
@@ -140,21 +140,21 @@ this.createjs.util = this.createjs.util || {};
         });
         this.vScaleTool.on("mousedown", function(evt) {
             if (that.target) {
-                var me = evt.currentTarget;
+                var tool = evt.currentTarget;
                 var scale = that.stage.scaleY;
                 var startScaleY = that.target.scaleY;
                 var startHeight = that.target.getBounds().height * startScaleY / 2;
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                me.on("pressmove", function(e) {
+                tool.on("pressmove", function(e) {
                     var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var v = (eRotate.y - evtRotate.y) / scale;
                     var vScale = (startScaleY / startHeight) * (startHeight + v);
                     that.target.scaleY = vScale;
                     that.stage.update();
                 });
-                me.on("pressup", function() {
-                    me.removeAllEventListeners("pressmove");
+                tool.on("pressup", function() {
+                    tool.removeAllEventListeners("pressmove");
                 });
             }
         });
@@ -173,7 +173,7 @@ this.createjs.util = this.createjs.util || {};
         });
         this.scaleTool.on("mousedown", function(evt) {
             if (that.target) {
-                var me = evt.currentTarget;
+                var tool = evt.currentTarget;
                 var scale = that.stage.scaleX;
                 var startScaleX = that.target.scaleX;
                 var startScaleY = that.target.scaleY;
@@ -181,7 +181,7 @@ this.createjs.util = this.createjs.util || {};
                 var startHeight = that.target.getBounds().height * startScaleY / 2;
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                me.on("pressmove", function(e) {
+                tool.on("pressmove", function(e) {
                     var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var h = (eRotate.x - evtRotate.x) / scale;
                     var v = (eRotate.y - evtRotate.y) / scale;
@@ -196,8 +196,8 @@ this.createjs.util = this.createjs.util || {};
                     that.target.scaleY = vScale;
                     that.stage.update();
                 });
-                me.on("pressup", function() {
-                    me.removeAllEventListeners("pressmove");
+                tool.on("pressup", function() {
+                    tool.removeAllEventListeners("pressmove");
                 });
             }
         });
@@ -216,13 +216,13 @@ this.createjs.util = this.createjs.util || {};
         });
         this.rotateTool.on("mousedown", function(evt) {
             if (that.target) {
-                var me = evt.currentTarget;
+                var tool = evt.currentTarget;
                 var scale = that.stage.scaleX;
-                var thisPoint = {x: me.x * that.target.scaleX, y: me.y * that.target.scaleY};
+                var thisPoint = {x: tool.x * that.target.scaleX, y: tool.y * that.target.scaleY};
                 var startPoint = {x: evt.localX + thisPoint.x, y: thisPoint.y + evt.localY};
                 var startRotation = that.target.rotation;
                 var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                me.on("pressmove", function(e) {
+                tool.on("pressmove", function(e) {
                     var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var h = (eRotate.x - evtRotate.x) / scale;
                     var v = (eRotate.y - evtRotate.y) / scale;
@@ -231,8 +231,8 @@ this.createjs.util = this.createjs.util || {};
                     that.target.rotation = startRotation - angle;
                     that.stage.update();
                 });
-                me.on("pressup", function() {
-                    me.removeAllEventListeners("pressmove");
+                tool.on("pressup", function() {
+                    tool.removeAllEventListeners("pressmove");
                 });
             }
         });
