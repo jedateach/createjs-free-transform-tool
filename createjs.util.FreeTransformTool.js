@@ -22,6 +22,10 @@ this.createjs.util = this.createjs.util || {};
     p.activeKey = null;
     p.dashed = null;
 
+    // debug
+    p.debug = {};
+    p.debug.rotateLine = null;
+
     // constructor:
     // copy before override
     p.Container_initialize = p.initialize;
@@ -204,6 +208,14 @@ this.createjs.util = this.createjs.util || {};
         this.addChild(this.scaleTool);
 
         // init rotate tool
+        /**
+         * Rotate around registration point
+         * Work out delta angle between three points:
+         *  1. drag start point
+         *  2. registration point
+         *  3. drag end/current point
+         * Add that angle to the object's start rotation
+         */
         this.rotateTool = createHandle();
         this.rotateTool.graphics.drawEllipse(0, 0, controlsSize, controlsSize);
         this.rotateTool.on("mouseover", function() {
@@ -229,6 +241,15 @@ this.createjs.util = this.createjs.util || {};
                     var endPoint = {x: startPoint.x + h, y: startPoint.y + v};
                     var angle = (Math.atan2(endPoint.x, endPoint.y) - Math.atan2(startPoint.x, startPoint.y)) * 180 / Math.PI;
                     that.target.rotation = startRotation - angle;
+
+                    if (that.debug) {
+                        that.debug.rotateLine.graphics.clear()
+                            .beginStroke("#f00")
+                            .setStrokeStyle(1)
+                            .moveTo(that.target.x, that.target.y)
+                            .lineTo(e.stageX, e.stageY);
+                    }
+
                     that.stage.update();
                 });
                 tool.on("pressup", function() {
@@ -237,6 +258,11 @@ this.createjs.util = this.createjs.util || {};
             }
         });
         this.addChild(this.rotateTool);
+
+        this.debug.rotateLine = new createjs.Shape();
+        this.debug.rotateLine.color = "#f00";
+        stage.addChild(this.debug.rotateLine);
+
         // update
         this.on("tick", function() {
             that.update();
