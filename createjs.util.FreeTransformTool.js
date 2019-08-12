@@ -227,8 +227,8 @@ this.createjs.util = this.createjs.util || {};
                     var h = (eRotate.x - evtRotate.x) / scale;
                     var v = (eRotate.y - evtRotate.y) / scale;
                     var endPoint = {x: startPoint.x + h, y: startPoint.y + v};
-                    var angel = (Math.atan2(endPoint.x, endPoint.y) - Math.atan2(startPoint.x, startPoint.y)) * 180 / Math.PI;
-                    that.target.rotation = startRotation - angel;
+                    var angle = (Math.atan2(endPoint.x, endPoint.y) - Math.atan2(startPoint.x, startPoint.y)) * 180 / Math.PI;
+                    that.target.rotation = startRotation - angle;
                     that.stage.update();
                 });
                 me.on("pressup", function() {
@@ -286,25 +286,25 @@ this.createjs.util = this.createjs.util || {};
             this.moveTool.scaleX = toolScaleX;
             this.moveTool.scaleY = toolScaleY;
 
-            // scale tool
+            // scale tool (bottom right)
             this.scaleTool.x = bounds.width / 2;
             this.scaleTool.y = bounds.height / 2;
             this.scaleTool.scaleX = toolScaleX;
             this.scaleTool.scaleY = toolScaleY;
 
-            // hScale tool
+            // hScale tool (right edge)
             this.hScaleTool.x = bounds.width / 2;
             this.hScaleTool.y = 0;
             this.hScaleTool.scaleX = toolScaleX;
             this.hScaleTool.scaleY = toolScaleY;
 
-            // hScale tool
+            // vScale tool (bottom edge)
             this.vScaleTool.x = 0;
             this.vScaleTool.y = bounds.height / 2;
             this.vScaleTool.scaleX = toolScaleX;
             this.vScaleTool.scaleY = toolScaleY;
 
-            // rotate tool
+            // rotate tool (top right)
             this.rotateTool.x = bounds.width / 2;
             this.rotateTool.y = -bounds.height / 2;
             this.rotateTool.scaleX = toolScaleX;
