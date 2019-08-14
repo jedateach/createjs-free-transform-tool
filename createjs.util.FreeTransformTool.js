@@ -8,6 +8,7 @@ this.createjs.util = this.createjs.util || {};
 
     // utility functions
     var rotatePoint = createjs.util.rotatePoint;
+    var calcAngleDegrees = createjs.util.calcAngleDegrees;
     var addEvent = createjs.util.addEvent;
 
     var FreeTransformTool = function(lineColor, dashed, color, size) {
@@ -21,14 +22,11 @@ this.createjs.util = this.createjs.util || {};
     p.hScaleTool = null;
     p.vScaleTool = null;
     p.rotateTool = null;
+    p.rotateTether = null;
     p.target = null;
     p.border = null;
     p.activeKey = null;
     p.dashed = null;
-
-    // debug
-    p.debug = {};
-    p.debug.rotateLine = null;
 
     // constructor:
     // copy before override
@@ -58,6 +56,11 @@ this.createjs.util = this.createjs.util || {};
         this.border.color = lineColor;
         this.addChild(this.border);
 
+        // line attaching rotate tool to border
+        this.rotateTether = new createjs.Shape();
+        this.rotateTether.color = lineColor;
+        this.addChild(this.rotateTether);
+
         // create a transform control handle
         var handleStrokeWidth = 1
         function createHandle() {
@@ -73,7 +76,7 @@ this.createjs.util = this.createjs.util || {};
 
         // init move tool
         this.moveTool = createHandle();
-        this.moveTool.graphics.drawRect(0, 0, controlsSize, controlsSize);
+        this.moveTool.graphics.drawEllipse(0, 0, controlsSize, controlsSize);
         this.moveTool.on("mouseover", function() {
             that.setTitle('Move');
             that.setCursor('move');
@@ -230,30 +233,25 @@ this.createjs.util = this.createjs.util || {};
             that.setTitle();
             that.setCursor('default');
         });
-        this.rotateTool.on("mousedown", function(evt) {
+        this.rotateTool.on("mousedown", function(downEvent) {
             if (that.target) {
-                var tool = evt.currentTarget;
+                var tool = downEvent.currentTarget;
                 var scale = that.stage.scaleX;
-                var thisPoint = {x: tool.x * that.target.scaleX, y: tool.y * that.target.scaleY};
-                var startPoint = {x: evt.localX + thisPoint.x, y: thisPoint.y + evt.localY};
                 var startRotation = that.target.rotation;
-                var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                tool.on("pressmove", function(e) {
-                    var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
-                    var h = (eRotate.x - evtRotate.x) / scale;
-                    var v = (eRotate.y - evtRotate.y) / scale;
-                    var endPoint = {x: startPoint.x + h, y: startPoint.y + v};
-                    var angle = (Math.atan2(endPoint.x, endPoint.y) - Math.atan2(startPoint.x, startPoint.y)) * 180 / Math.PI;
-                    that.target.rotation = startRotation - angle;
-
-                    if (that.debug) {
-                        that.debug.rotateLine.graphics.clear()
-                            .beginStroke("#f00")
-                            .setStrokeStyle(1)
-                            .moveTo(that.target.x, that.target.y)
-                            .lineTo(e.stageX, e.stageY);
-                    }
-
+                tool.on("pressmove", function(moveEvent) {
+                    // the drag point is relative to the display object x,y position on the stage (it's registration point)
+                    var relativeStartPoint = {
+                        x: downEvent.stageX - that.target.x,
+                        y: downEvent.stageY - that.target.y
+                    };
+                    var relativeEndPoint = {
+                        x: moveEvent.stageX - that.target.x,
+                        y: moveEvent.stageY - that.target.y
+                    };
+                    var endAngle = calcAngleDegrees(relativeEndPoint.x , relativeEndPoint.y);
+                    var startAngle = calcAngleDegrees(relativeStartPoint.x, relativeStartPoint.y);
+                    var deltaAngle = endAngle - startAngle;
+                    that.target.rotation = startRotation + deltaAngle;
                     that.stage.update();
                 });
                 tool.on("pressup", function() {
@@ -262,10 +260,6 @@ this.createjs.util = this.createjs.util || {};
             }
         });
         this.addChild(this.rotateTool);
-
-        this.debug.rotateLine = new createjs.Shape();
-        this.debug.rotateLine.color = "#f00";
-        stage.addChild(this.debug.rotateLine);
 
         // update
         this.on("tick", function() {
@@ -296,7 +290,7 @@ this.createjs.util = this.createjs.util || {};
             // borders
             this.border.graphics.clear();
             if(this.dashed) {
-                this.border.graphics.setStrokeDash([5, 5], 0);
+                this.border.graphics.setStrokeDash([5 / this.scaleX, 5 / this.scaleX], 0);
             } 
             this.border.graphics.beginStroke(this.border.color)
                 .setStrokeStyle(1 / this.scaleY)
@@ -304,7 +298,7 @@ this.createjs.util = this.createjs.util || {};
                 .lineTo(this.width / 2, -this.height / 2)
                 .moveTo(-this.width / 2, this.height / 2)
                 .lineTo(this.width / 2, this.height / 2)
-                    .setStrokeStyle(2 / this.scaleX)
+                .setStrokeStyle(1 / this.scaleX)
                 .moveTo(-this.width / 2, -this.height / 2)
                 .lineTo( -this.width / 2, this.height / 2)
                 .moveTo(this.width / 2, -this.height / 2)
@@ -338,11 +332,22 @@ this.createjs.util = this.createjs.util || {};
             this.vScaleTool.scaleX = toolScaleX;
             this.vScaleTool.scaleY = toolScaleY;
 
-            // rotate tool (top right)
-            this.rotateTool.x = bounds.width / 2;
-            this.rotateTool.y = -bounds.height / 2;
+
+            // rotate tool
+            this.rotateTool.x = 0;
+            this.rotateTool.y = -bounds.height;
             this.rotateTool.scaleX = toolScaleX;
             this.rotateTool.scaleY = toolScaleY;
+
+            this.rotateTether.graphics.clear();
+            if(this.dashed) {
+                this.rotateTether.graphics.setStrokeDash([5 / this.scaleX, 5 / this.scaleY], 0);
+            } 
+            this.rotateTether.graphics
+                .beginStroke(this.border.color)
+                .setStrokeStyle(1 / this.scaleX)
+                .moveTo(this.rotateTool.x, this.rotateTool.y)
+                .lineTo(this.regX, -bounds.height/2);
 
             this.visible = true;
         } else {
