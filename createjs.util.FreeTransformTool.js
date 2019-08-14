@@ -6,6 +6,10 @@ this.createjs.util = this.createjs.util || {};
 // class
 (function() {
 
+    // utility functions
+    var rotatePoint = createjs.util.rotatePoint;
+    var addEvent = createjs.util.addEvent;
+
     var FreeTransformTool = function(lineColor, dashed, color, size) {
         this.initialize(lineColor, dashed, color, size);
     };
@@ -41,11 +45,11 @@ this.createjs.util = this.createjs.util || {};
         var that = this;
 
         // listen to keyboard
-        createjs.util.addEvent(document, "keydown", function(ev) {
+        addEvent(document, "keydown", function(ev) {
             var ev = ev || window.event;
             that.activeKey = ev.keyCode;
         });
-        createjs.util.addEvent(document, "keyup", function(ev) {
+        addEvent(document, "keyup", function(ev) {
             that.activeKey = null;
         });
 
@@ -116,9 +120,9 @@ this.createjs.util = this.createjs.util || {};
                 var startScaleX = that.target.scaleX;
                 var startWidth = that.target.getBounds().width * startScaleX / 2;
                 var startRotation = that.target.rotation;
-                var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
+                var evtRotate = rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
                 tool.on("pressmove", function(e) {
-                    var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
+                    var eRotate = rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var h = (eRotate.x - evtRotate.x) / scale;
                     var hScale = (startScaleX / startWidth) * (startWidth + h);
                     that.target.scaleX = hScale;
@@ -149,9 +153,9 @@ this.createjs.util = this.createjs.util || {};
                 var startScaleY = that.target.scaleY;
                 var startHeight = that.target.getBounds().height * startScaleY / 2;
                 var startRotation = that.target.rotation;
-                var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
+                var evtRotate = rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
                 tool.on("pressmove", function(e) {
-                    var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
+                    var eRotate = rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var v = (eRotate.y - evtRotate.y) / scale;
                     var vScale = (startScaleY / startHeight) * (startHeight + v);
                     that.target.scaleY = vScale;
@@ -184,9 +188,9 @@ this.createjs.util = this.createjs.util || {};
                 var startWidth = that.target.getBounds().width * startScaleX / 2;
                 var startHeight = that.target.getBounds().height * startScaleY / 2;
                 var startRotation = that.target.rotation;
-                var evtRotate = createjs.util.rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
+                var evtRotate = rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
                 tool.on("pressmove", function(e) {
-                    var eRotate = createjs.util.rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
+                    var eRotate = rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
                     var h = (eRotate.x - evtRotate.x) / scale;
                     var v = (eRotate.y - evtRotate.y) / scale;
                     var hScale = (startScaleX / startWidth) * (startWidth + h);
