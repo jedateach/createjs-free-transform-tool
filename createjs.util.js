@@ -105,6 +105,10 @@ createjs.util.rotatePoint = function(point, center, angle) {
     };
 };
 
+createjs.util.calcAngleDegrees = function(x, y) {
+    return Math.atan2(y, x) * 180 / Math.PI;
+}
+
 createjs.util.addEvent = function(html_element, event_name, event_function) {
     if (html_element.addEventListener) { // Modern
         html_element.addEventListener(event_name, event_function, false);
