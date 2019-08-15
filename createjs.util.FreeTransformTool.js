@@ -117,19 +117,15 @@ this.createjs.util = this.createjs.util || {};
             that.setTitle();
             that.setCursor('default');
         });
-        this.hScaleTool.on("mousedown", function(evt) {
+        this.hScaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
-                var tool = evt.currentTarget;
-                var scale = that.stage.scaleX;
-                var startScaleX = that.target.scaleX;
-                var startWidth = that.target.getBounds().width * startScaleX / 2;
-                var startRotation = that.target.rotation;
-                var evtRotate = rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                tool.on("pressmove", function(e) {
-                    var eRotate = rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
-                    var h = (eRotate.x - evtRotate.x) / scale;
-                    var hScale = (startScaleX / startWidth) * (startWidth + h);
-                    that.target.scaleX = hScale;
+                var tool = downEvent.currentTarget;
+                var startScale = { x: that.target.scaleX, y: that.target.scaleY };
+                tool.on("pressmove", function(moveEvent) {
+                    var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
+                    var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
+                    var rescaleFactor = distEnd / distStart;
+                    that.target.scaleX = startScale.x * rescaleFactor;
                     that.stage.update();
                 });
                 tool.on("pressup", function() {
@@ -150,19 +146,15 @@ this.createjs.util = this.createjs.util || {};
             that.setTitle();
             that.setCursor('default');
         });
-        this.vScaleTool.on("mousedown", function(evt) {
+        this.vScaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
-                var tool = evt.currentTarget;
-                var scale = that.stage.scaleY;
-                var startScaleY = that.target.scaleY;
-                var startHeight = that.target.getBounds().height * startScaleY / 2;
-                var startRotation = that.target.rotation;
-                var evtRotate = rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                tool.on("pressmove", function(e) {
-                    var eRotate = rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
-                    var v = (eRotate.y - evtRotate.y) / scale;
-                    var vScale = (startScaleY / startHeight) * (startHeight + v);
-                    that.target.scaleY = vScale;
+                var tool = downEvent.currentTarget;
+                var startScale = { x: that.target.scaleX, y: that.target.scaleY };
+                tool.on("pressmove", function(moveEvent) {
+                    var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
+                    var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
+                    var rescaleFactor = distEnd / distStart;
+                    that.target.scaleY = startScale.y * rescaleFactor;
                     that.stage.update();
                 });
                 tool.on("pressup", function() {
