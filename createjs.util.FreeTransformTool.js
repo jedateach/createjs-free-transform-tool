@@ -38,6 +38,7 @@ this.createjs.util = this.createjs.util || {};
         lineColor = lineColor || "#4285F4";
         color = color || "rgba(255,255,255,0.8)";
         controlsSize = controlsSize || 10;
+        
         this.dashed = dashed === undefined ? true : dashed;
 
         var that = this;
@@ -63,8 +64,16 @@ this.createjs.util = this.createjs.util || {};
 
         // create a transform control handle
         var handleStrokeWidth = 1
-        function createHandle() {
+        function createHandle(name, cursor) {
             var shape = new createjs.Shape();
+            shape.on("mouseover", function() {
+                that.setTitle(name);
+                that.setCursor(cursor);
+            });
+            shape.on("mouseout", function() {
+                that.setTitle();
+                that.setCursor('default');
+            });
             shape.graphics
                 .beginStroke(lineColor)
                 .setStrokeStyle(handleStrokeWidth)
@@ -75,16 +84,8 @@ this.createjs.util = this.createjs.util || {};
         }
 
         // init move tool
-        this.moveTool = createHandle();
+        this.moveTool = createHandle('Move', 'move');
         this.moveTool.graphics.drawEllipse(0, 0, controlsSize, controlsSize);
-        this.moveTool.on("mouseover", function() {
-            that.setTitle('Move');
-            that.setCursor('move');
-        });
-        this.moveTool.on("mouseout", function() {
-            that.setTitle();
-            that.setCursor('default');
-        });
         this.moveTool.on("mousedown", function(evt) {
             if (that.target) {
                 var tool = evt.currentTarget;
@@ -105,17 +106,9 @@ this.createjs.util = this.createjs.util || {};
         this.addChild(this.moveTool);
 
         // init hScale tool
-        this.hScaleTool = createHandle();
+        this.hScaleTool = createHandle('Stretch', 'e-resize');
         this.hScaleTool.graphics.drawRect(0, 0, controlsSize, controlsSize);
         this.hScaleTool.alpha = 0.8;
-        this.hScaleTool.on("mouseover", function() {
-            that.setTitle('Resize');
-            that.setCursor('e-resize');
-        });
-        this.hScaleTool.on("mouseout", function() {
-            that.setTitle();
-            that.setCursor('default');
-        });
         this.hScaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
@@ -135,16 +128,8 @@ this.createjs.util = this.createjs.util || {};
         this.addChild(this.hScaleTool);
 
         // init vScale tool
-        this.vScaleTool = createHandle();
+        this.vScaleTool = createHandle('Stretch', 's-resize');
         this.vScaleTool.graphics.drawRect(0, 0, controlsSize, controlsSize);
-        this.vScaleTool.on("mouseover", function() {
-            that.setTitle('Resize');
-            that.setCursor('s-resize');
-        });
-        this.vScaleTool.on("mouseout", function() {
-            that.setTitle();
-            that.setCursor('default');
-        });
         this.vScaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
@@ -169,16 +154,8 @@ this.createjs.util = this.createjs.util || {};
          * the difference in position away/near the
          * registration point
          */
-        this.scaleTool = createHandle();
+        this.scaleTool = createHandle('Resize', 'se-resize');
         this.scaleTool.graphics.drawRect(0, 0, controlsSize, controlsSize);
-        this.scaleTool.on("mouseover", function() {
-            that.setTitle('Resize');
-            that.setCursor('se-resize');
-        });
-        this.scaleTool.on("mouseout", function() {
-            that.setTitle();
-            that.setCursor('default');
-        });
         this.scaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
@@ -208,16 +185,8 @@ this.createjs.util = this.createjs.util || {};
          *  3. drag end/current point
          * Add that angle to the object's start rotation
          */
-        this.rotateTool = createHandle();
+        this.rotateTool = createHandle('Rotate', 'pointer');
         this.rotateTool.graphics.drawEllipse(0, 0, controlsSize, controlsSize);
-        this.rotateTool.on("mouseover", function() {
-            that.setTitle('Rotate');
-            that.setCursor('pointer');
-        });
-        this.rotateTool.on("mouseout", function() {
-            that.setTitle();
-            that.setCursor('default');
-        });
         this.rotateTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
