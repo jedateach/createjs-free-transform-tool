@@ -92,19 +92,6 @@ createjs.util.drawCross = function(graphics, width, height, lineColor) {
             .lineTo(width / 2, height);
 };
 
-/*
-* Rotates a point around a center by an angle
-*/
-createjs.util.rotatePoint = function(point, center, angle) {
-    var angleInRadians = angle * (Math.PI / 180);
-    var cosTheta = Math.cos(angleInRadians);
-    var sinTheta = Math.sin(angleInRadians);
-    return {
-        x: (cosTheta * (point.x - center.x) - sinTheta * (point.y - center.y) + center.x),
-        y: (sinTheta * (point.x - center.x) + cosTheta * (point.y - center.y) + center.y)
-    };
-};
-
 createjs.util.calcAngleDegrees = function(x, y) {
     return Math.atan2(y, x) * 180 / Math.PI;
 }

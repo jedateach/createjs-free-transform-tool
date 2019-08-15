@@ -7,7 +7,6 @@ this.createjs.util = this.createjs.util || {};
 (function() {
 
     // utility functions
-    var rotatePoint = createjs.util.rotatePoint;
     var calcAngleDegrees = createjs.util.calcAngleDegrees;
     var calcDistance = createjs.util.calcDistance;
     var addEvent = createjs.util.addEvent;
