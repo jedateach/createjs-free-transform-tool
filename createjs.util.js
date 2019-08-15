@@ -109,6 +109,10 @@ createjs.util.calcAngleDegrees = function(x, y) {
     return Math.atan2(y, x) * 180 / Math.PI;
 }
 
+createjs.util.calcDistance = function(x1, y1, x2, y2) {
+    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
+
 createjs.util.addEvent = function(html_element, event_name, event_function) {
     if (html_element.addEventListener) { // Modern
         html_element.addEventListener(event_name, event_function, false);

@@ -9,6 +9,7 @@ this.createjs.util = this.createjs.util || {};
     // utility functions
     var rotatePoint = createjs.util.rotatePoint;
     var calcAngleDegrees = createjs.util.calcAngleDegrees;
+    var calcDistance = createjs.util.calcDistance;
     var addEvent = createjs.util.addEvent;
 
     var FreeTransformTool = function(lineColor, dashed, color, size) {
@@ -171,7 +172,12 @@ this.createjs.util = this.createjs.util || {};
         });
         this.addChild(this.vScaleTool);
 
-        // init scale tool
+        /**
+         * Scale tool:
+         * Changes display object's scale based on
+         * the difference in position away/near the
+         * registration point
+         */
         this.scaleTool = createHandle();
         this.scaleTool.graphics.drawRect(0, 0, controlsSize, controlsSize);
         this.scaleTool.on("mouseover", function() {
@@ -182,29 +188,17 @@ this.createjs.util = this.createjs.util || {};
             that.setTitle();
             that.setCursor('default');
         });
-        this.scaleTool.on("mousedown", function(evt) {
+        this.scaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
-                var tool = evt.currentTarget;
-                var scale = that.stage.scaleX;
-                var startScaleX = that.target.scaleX;
-                var startScaleY = that.target.scaleY;
-                var startWidth = that.target.getBounds().width * startScaleX / 2;
-                var startHeight = that.target.getBounds().height * startScaleY / 2;
-                var startRotation = that.target.rotation;
-                var evtRotate = rotatePoint({x: evt.stageX, y: evt.stageY}, {x: 0, y: 0}, -startRotation);
-                tool.on("pressmove", function(e) {
-                    var eRotate = rotatePoint({x: e.stageX, y: e.stageY}, {x: 0, y: 0}, -startRotation);
-                    var h = (eRotate.x - evtRotate.x) / scale;
-                    var v = (eRotate.y - evtRotate.y) / scale;
-                    var hScale = (startScaleX / startWidth) * (startWidth + h);
-                    var vScale = (startScaleY / startHeight) * (startHeight + v);
-                    var isShift = that.activeKey === 16; // shift key
-                    if (true || isShift) {
-                        hScale = hScale >= vScale ? hScale : vScale;
-                        vScale = vScale >= hScale ? vScale : hScale;
-                    }
-                    that.target.scaleX = hScale;
-                    that.target.scaleY = vScale;
+                var tool = downEvent.currentTarget;
+                var startScale = { x: that.target.scaleX, y: that.target.scaleY };
+                tool.on("pressmove", function(moveEvent) {
+                    var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
+                    var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
+                    var rescaleFactor = distEnd / distStart;
+                    // evenly apply rescaling factor to both axis
+                    that.target.scaleX = startScale.x * rescaleFactor;
+                    that.target.scaleY = startScale.y * rescaleFactor;
                     that.stage.update();
                 });
                 tool.on("pressup", function() {
