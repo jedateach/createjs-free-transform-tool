@@ -214,9 +214,9 @@ this.createjs.util = this.createjs.util || {};
         });
         this.addChild(this.scaleTool);
 
-        // init rotate tool
         /**
-         * Rotate around registration point
+         * Rotate Tool:
+         * Rotates around registration point
          * Work out delta angle between three points:
          *  1. drag start point
          *  2. registration point
@@ -236,7 +236,6 @@ this.createjs.util = this.createjs.util || {};
         this.rotateTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
-                var scale = that.stage.scaleX;
                 var startRotation = that.target.rotation;
                 tool.on("pressmove", function(moveEvent) {
                     // the drag point is relative to the display object x,y position on the stage (it's registration point)
