@@ -50,8 +50,8 @@ function handleImageLoad(event) {
 	ellipse.x = canvas.width / 2;
 	ellipse.y = canvas.height / 2;
 	ellipse.setBounds(0, 0, 200, 300);
-	ellipse.regX = ellipse.getBounds().width / 2 | 0;
-	ellipse.regY = ellipse.getBounds().height / 2 | 0;
+	ellipse.regX = ellipse.getBounds().width / 5 | 0;
+	ellipse.regY = ellipse.getBounds().height / 5 | 0;
 	ellipse.graphics.setStrokeStyle(4)
 		.beginRadialGradientFill(["#FFF","#35E"],[1,0],0,0,200,30,-50,40)
 		.drawEllipse(0, 0, 200, 300);
@@ -78,8 +78,6 @@ function handleImageLoad(event) {
 	text.y = canvas.height / 2;
 	text.rotation = 5 | 0;
 	var bounds = text.getBounds();
-	text.regX = bounds.width / 2 | 0;
-	text.regY = bounds.height / 2 | 0;
 	text.cursor = "pointer";
 	
 	var hit = new createjs.Shape();
