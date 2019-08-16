@@ -89,12 +89,6 @@ function handleImageLoad(event) {
 	clickToSelect(text);
 	container.addChild(text);
 
-	// Handle deselect when clicking stage
-	stage.on("stagemouseup", function () {
-		selectTool.unselect();
-		update = true;
-	});
-
 	createjs.Ticker.addEventListener("tick", tick);
 }
 
