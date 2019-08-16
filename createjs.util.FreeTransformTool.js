@@ -105,19 +105,23 @@ this.createjs.util = this.createjs.util || {};
                     var v = (moveEvent.stageY - downEvent.stageY) / scale;
                     that.target.x = startPoint.x + h;
                     that.target.y = startPoint.y + v;
-                    tool.moved = true;
+                    tool.movedDistance = calcDistance(downEvent.stageX, downEvent.stageY, moveEvent.stageX, moveEvent.stageY);
                     that.stage.update();
                 });
                 tool.on("pressup", function(upEvent) {
                     tool.removeAllEventListeners("pressmove");
                     upEvent.stopPropagation();
-                    tool.moved = false;
+                    tool.movedDistance = 0;
                 });
             }
         });
         // click to deselect
         this.moveTool.on("click", function(clickEvent) {
-            if(!clickEvent.currentTarget.moved) {
+            // only deselect if there was very little movement on click
+            // which helps on mobile devices, where it's difficult to 
+            // tap without dragging slightly
+            var movedThreshold = 10;
+            if(clickEvent.currentTarget.movedDistance < movedThreshold) {
                 that.unselect();
                 that.stage.update();
             }
