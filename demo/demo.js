@@ -34,6 +34,8 @@ function init() {
 	var image = new Image();
 	image.src = "demo/daisy.png";
 	image.onload = handleImageLoad;
+
+	handleResize();
 }
 
 function stop() {
@@ -48,11 +50,11 @@ function handleImageLoad(event) {
 
 	// Shape
 	var ellipse = new createjs.Shape();
-	ellipse.x = canvas.width / 2;
-	ellipse.y = canvas.height / 2;
+	ellipse.x = (canvas.width / 2);
+	ellipse.y = canvas.height / 4;
 	ellipse.setBounds(0, 0, 200, 300);
-	ellipse.regX = ellipse.getBounds().width / 5 | 0;
-	ellipse.regY = ellipse.getBounds().height / 5 | 0;
+	ellipse.regX = ellipse.getBounds().width / 2 | 0;
+	ellipse.regY = ellipse.getBounds().height / 6 | 0;
 	ellipse.graphics.setStrokeStyle(4)
 		.beginRadialGradientFill(["#FFF","#35E"],[1,0],0,0,200,30,-50,40)
 		.drawEllipse(0, 0, 200, 300);
@@ -61,8 +63,8 @@ function handleImageLoad(event) {
 
 	// Bitmap
 	bitmap = new createjs.Bitmap(image);
-	bitmap.x = canvas.width / 2.5 | 0;
-	bitmap.y = canvas.height / 4 | 0;
+	bitmap.x = canvas.width / 2;
+	bitmap.y = canvas.height / 6;
 	bitmap.rotation = -25 | 0;
 	bitmap.regX = bitmap.image.width / 2 | 0;
 	bitmap.regY = bitmap.image.height / 2 | 0;
@@ -73,12 +75,13 @@ function handleImageLoad(event) {
 	
 	// Text
 	var text = new createjs.Text("Hello\nWorld", "100px Arial", "#ff7700");
-	// text.textAlign = "center";
-	text.outline = 5	;
+	var textBounds = text.getBounds();
+	text.regX = textBounds.width / 2;
+	text.regY = textBounds.height / 2;
+	text.outline = 5;
 	text.x = canvas.width / 2;
 	text.y = canvas.height / 2;
 	text.rotation = 5 | 0;
-	var bounds = text.getBounds();
 	text.cursor = "pointer";
 	
 	var hit = new createjs.Shape();
@@ -90,6 +93,7 @@ function handleImageLoad(event) {
 	container.addChild(text);
 
 	createjs.Ticker.addEventListener("tick", tick);
+
 }
 
 function clickToSelect(displayObject) {
@@ -106,6 +110,18 @@ function tick(event) {
 		update = false; // only update once
 		stage.update(event);
 	}
+}
+
+
+var containerElement = document.getElementById("CanvasContainer");
+window.addEventListener("resize", handleResize);
+function handleResize() {
+    var w = containerElement.clientWidth; // -2 accounts for the border
+	//var h = window.innerHeight-2;
+	
+    stage.canvas.width = w;
+    //stage.canvas.height = h;
+    stage.update();
 }
 
 init();
