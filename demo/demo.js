@@ -25,7 +25,8 @@ function init() {
 	var top = new createjs.Container();
 	top.name = "top";
 	stage.addChild(top);
-	selectTool = new createjs.util.FreeTransformTool();
+	let controlsSize = 10 * window.devicePixelRatio;
+	selectTool = new createjs.util.FreeTransformTool("#057", true, "rgba(255,255,255,0.8)", controlsSize);
 	selectTool.name = "transform";
 	top.addChild(selectTool);
 
