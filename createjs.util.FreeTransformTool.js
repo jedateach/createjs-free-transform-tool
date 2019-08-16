@@ -88,25 +88,38 @@ this.createjs.util = this.createjs.util || {};
             return shape;
         }
 
-        // init move tool
-
+        /**
+         * Move tool
+         * Drag anywhere within the object bounds to move.
+         * Click to deselect.
+         */
         this.moveTool = new createjs.Shape();
         addToolTip(this.moveTool, "Move", "move");
-        this.moveTool.on("mousedown", function(evt) {
+        this.moveTool.on("mousedown", function(downEvent) {
             if (that.target) {
-                var tool = evt.currentTarget;
+                var tool = downEvent.currentTarget;
                 var scale = that.stage.scaleX;
                 var startPoint = {x: that.target.x, y: that.target.y};
-                tool.on("pressmove", function(e) {
-                    var h = (e.stageX - evt.stageX) / scale;
-                    var v = (e.stageY - evt.stageY) / scale;
+                tool.on("pressmove", function(moveEvent) {
+                    var h = (moveEvent.stageX - downEvent.stageX) / scale;
+                    var v = (moveEvent.stageY - downEvent.stageY) / scale;
                     that.target.x = startPoint.x + h;
                     that.target.y = startPoint.y + v;
+                    tool.moved = true;
                     that.stage.update();
                 });
-                tool.on("pressup", function() {
+                tool.on("pressup", function(upEvent) {
                     tool.removeAllEventListeners("pressmove");
+                    upEvent.stopPropagation();
+                    tool.moved = false;
                 });
+            }
+        });
+        // click to deselect
+        this.moveTool.on("click", function(clickEvent) {
+            if(!clickEvent.currentTarget.moved) {
+                that.unselect();
+                that.stage.update();
             }
         });
         this.moveHitArea = new createjs.Shape();
