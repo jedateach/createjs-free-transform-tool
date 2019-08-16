@@ -18,6 +18,7 @@ this.createjs.util = this.createjs.util || {};
 
     // public properties:    
     p.moveTool = null;
+    p.moveHitArea = null;
     p.scaleTool = null;
     p.hScaleTool = null;
     p.vScaleTool = null;
@@ -62,10 +63,7 @@ this.createjs.util = this.createjs.util || {};
         this.rotateTether.color = lineColor;
         this.addChild(this.rotateTether);
 
-        // create a transform control handle
-        var handleStrokeWidth = 1
-        function createHandle(name, cursor) {
-            var shape = new createjs.Shape();
+        function addToolTip(shape, name, cursor) {
             shape.on("mouseover", function() {
                 that.setTitle(name);
                 that.setCursor(cursor);
@@ -74,6 +72,13 @@ this.createjs.util = this.createjs.util || {};
                 that.setTitle();
                 that.setCursor('default');
             });
+        }
+
+        // create a transform control handle
+        var handleStrokeWidth = 1
+        function createHandle(name, cursor) {
+            var shape = new createjs.Shape();
+            addToolTip(shape, name, cursor);
             shape.graphics
                 .beginStroke(lineColor)
                 .setStrokeStyle(handleStrokeWidth)
@@ -84,8 +89,9 @@ this.createjs.util = this.createjs.util || {};
         }
 
         // init move tool
-        this.moveTool = createHandle('Move', 'move');
-        this.moveTool.graphics.drawEllipse(0, 0, controlsSize, controlsSize);
+
+        this.moveTool = new createjs.Shape();
+        addToolTip(this.moveTool, "Move", "move");
         this.moveTool.on("mousedown", function(evt) {
             if (that.target) {
                 var tool = evt.currentTarget;
@@ -103,6 +109,8 @@ this.createjs.util = this.createjs.util || {};
                 });
             }
         });
+        this.moveHitArea = new createjs.Shape();
+        this.moveTool.hitArea = this.moveHitArea;
         this.addChild(this.moveTool);
 
         // init hScale tool
@@ -257,15 +265,14 @@ this.createjs.util = this.createjs.util || {};
                 .moveTo(this.width / 2, -this.height / 2)
                 .lineTo( this.width / 2, this.height / 2);
 
-            // tools scale
+            // tools size should stay consistent
             var toolScaleX = 1 / (this.scaleX * this.stage.scaleX);
             var toolScaleY = 1 / (this.scaleY * this.stage.scaleY);
 
-            // set move tool
-            this.moveTool.x = 0;
-            this.moveTool.y = 0;
-            this.moveTool.scaleX = toolScaleX;
-            this.moveTool.scaleY = toolScaleY;
+            // draw move hit area
+            this.moveHitArea.graphics.clear()
+                .beginFill("#000")
+                .rect(-this.width / 2, -this.height / 2, this.width, this.height);
 
             // scale tool (bottom right)
             this.scaleTool.x = bounds.width / 2;
@@ -284,7 +291,6 @@ this.createjs.util = this.createjs.util || {};
             this.vScaleTool.y = bounds.height / 2;
             this.vScaleTool.scaleX = toolScaleX;
             this.vScaleTool.scaleY = toolScaleY;
-
 
             // rotate tool
             this.rotateTool.x = 0;
