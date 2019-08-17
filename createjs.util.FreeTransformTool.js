@@ -274,13 +274,13 @@ this.createjs.util = this.createjs.util || {};
                 .setStrokeStyle(1 / this.scaleY)
                 .moveTo(-this.width / 2, -this.height / 2)
                 .lineTo(this.width / 2, -this.height / 2)
-                .moveTo(-this.width / 2, this.height / 2)
-                .lineTo(this.width / 2, this.height / 2)
+                .moveTo(this.width / 2, this.height / 2)
+                .lineTo(-this.width / 2, this.height / 2)
                 .setStrokeStyle(1 / this.scaleX)
                 .moveTo(-this.width / 2, -this.height / 2)
                 .lineTo( -this.width / 2, this.height / 2)
-                .moveTo(this.width / 2, -this.height / 2)
-                .lineTo( this.width / 2, this.height / 2);
+                .moveTo(this.width / 2, this.height / 2)
+                .lineTo( this.width / 2, -this.height / 2);
 
             // tools size should stay consistent
             var toolScaleX = 1 / (this.scaleX * this.stage.scaleX);
