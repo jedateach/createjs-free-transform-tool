@@ -276,8 +276,11 @@ this.createjs.util = this.createjs.util || {};
                 .moveTo(-this.width / 2, -this.height / 2)
                 .lineTo(this.width / 2, -this.height / 2)
                 .moveTo(this.width / 2, this.height / 2)
-                .lineTo(-this.width / 2, this.height / 2)
-                .setStrokeStyle(this.controlStrokeThickness / this.scaleX)
+                .lineTo(-this.width / 2, this.height / 2);
+            if(this.dashed) {
+                this.border.graphics.setStrokeDash([5 / this.scaleY, 5 / this.scaleY], 0);
+            }    
+            this.border.graphics.setStrokeStyle(this.controlStrokeThickness / this.scaleX)
                 .moveTo(-this.width / 2, -this.height / 2)
                 .lineTo( -this.width / 2, this.height / 2)
                 .moveTo(this.width / 2, this.height / 2)
@@ -318,7 +321,7 @@ this.createjs.util = this.createjs.util || {};
 
             this.rotateTether.graphics.clear();
             if(this.dashed) {
-                this.rotateTether.graphics.setStrokeDash([5 / this.scaleX, 5 / this.scaleY], 0);
+                this.rotateTether.graphics.setStrokeDash([5 / this.scaleY, 5 / this.scaleY], 0);
             } 
             this.rotateTether.graphics
                 .beginStroke(this.border.color)
