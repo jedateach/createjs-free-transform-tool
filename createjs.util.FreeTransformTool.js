@@ -39,7 +39,8 @@ this.createjs.util = this.createjs.util || {};
         lineColor = lineColor || "#4285F4";
         color = color || "rgba(255,255,255,0.8)";
         controlsSize = controlsSize || 10;
-        
+
+        this.controlStrokeThickness = 1;        
         this.dashed = dashed === undefined ? true : dashed;
 
         var that = this;
@@ -75,7 +76,7 @@ this.createjs.util = this.createjs.util || {};
         }
 
         // create a transform control handle
-        var handleStrokeWidth = 1
+        var handleStrokeWidth = this.controlStrokeThickness;
         function createHandle(name, cursor) {
             var shape = new createjs.Shape();
             addToolTip(shape, name, cursor);
@@ -271,12 +272,12 @@ this.createjs.util = this.createjs.util || {};
                 this.border.graphics.setStrokeDash([5 / this.scaleX, 5 / this.scaleX], 0);
             } 
             this.border.graphics.beginStroke(this.border.color)
-                .setStrokeStyle(1 / this.scaleY)
+                .setStrokeStyle(this.controlStrokeThickness / this.scaleY)
                 .moveTo(-this.width / 2, -this.height / 2)
                 .lineTo(this.width / 2, -this.height / 2)
                 .moveTo(this.width / 2, this.height / 2)
                 .lineTo(-this.width / 2, this.height / 2)
-                .setStrokeStyle(1 / this.scaleX)
+                .setStrokeStyle(this.controlStrokeThickness / this.scaleX)
                 .moveTo(-this.width / 2, -this.height / 2)
                 .lineTo( -this.width / 2, this.height / 2)
                 .moveTo(this.width / 2, this.height / 2)
@@ -321,7 +322,7 @@ this.createjs.util = this.createjs.util || {};
             } 
             this.rotateTether.graphics
                 .beginStroke(this.border.color)
-                .setStrokeStyle(1 / this.scaleX)
+                .setStrokeStyle(this.controlStrokeThickness / this.scaleX)
                 .moveTo(this.rotateTool.x, this.rotateTool.y)
                 .lineTo(this.regX, -bounds.height/2);
 
