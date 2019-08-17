@@ -4,14 +4,24 @@
         <meta name="viewport" content="width=device-width, user-scalable=no" />
         <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
         <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
-        <style></style>
+        <style>
+            body {
+                background: -webkit-linear-gradient(to bottom, #fffcdc, #d9a7c7);  /* Chrome 10-25, Safari 5.1-6 */
+                background: linear-gradient(to bottom, #fffcdc, #d9a7c7); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+            }
+            #Designer {
+                border: 2px solid #fff;
+                background-color: rgba(255, 255, 255, 0.5);
+            }
+        </style>
     </head>
     <body>
         <div class="container">
-            <div id="CanvasContainer" class="column col-10 col-mx-auto">
+            <div id="CanvasContainer" class="column col-10 col-mx-auto mt-2 mb-2">
                 <h2>Create.js Free Transform Tool</h2>
                 <p>Select on of the display objects to show the controls for transforming it.</p>
-                <canvas style="border: 1px solid grey;" id="Designer" width="500" height="500"></canvas>
+                <canvas id="Designer" width="500" height="400"></canvas>
             </div>
         </div>
         <script

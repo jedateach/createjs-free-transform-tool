@@ -74,13 +74,13 @@ function handleImageLoad(event) {
 	container.addChild(bitmap);
 	
 	// Text
-	var text = new createjs.Text("Hello\nWorld", "100px Arial", "#ff7700");
+	var text = new createjs.Text("Hello\nWorld", "70px Arial", "#052865");
 	var textBounds = text.getBounds();
 	text.regX = textBounds.width / 2;
 	text.regY = textBounds.height / 2;
 	text.outline = 5;
 	text.x = canvas.width / 2;
-	text.y = canvas.height / 2;
+	text.y = canvas.height / 2.3;
 	text.rotation = 5 | 0;
 	text.cursor = "pointer";
 	
