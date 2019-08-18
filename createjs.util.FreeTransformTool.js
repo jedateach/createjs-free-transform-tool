@@ -1,15 +1,19 @@
 // namespace:
 this.createjs = this.createjs || {};
+
 // package
 this.createjs.util = this.createjs.util || {};
 
 // class
 (function() {
 
-    // utility functions
-    var calcAngleDegrees = createjs.util.calcAngleDegrees;
-    var calcDistance = createjs.util.calcDistance;
-    var addEvent = createjs.util.addEvent;
+    // private helper functions
+    function calcAngleDegrees(x, y) {
+        return Math.atan2(y, x) * 180 / Math.PI;
+    }
+    function calcDistance(x1, y1, x2, y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    }
 
     var FreeTransformTool = function(lineColor, dashed, color, size) {
         this.initialize(lineColor, dashed, color, size);
@@ -26,7 +30,6 @@ this.createjs.util = this.createjs.util || {};
     p.rotateTether = null;
     p.target = null;
     p.border = null;
-    p.activeKey = null;
     p.dashed = null;
 
     // constructor:
@@ -44,15 +47,6 @@ this.createjs.util = this.createjs.util || {};
         this.dashed = dashed === undefined ? true : dashed;
 
         var that = this;
-
-        // listen to keyboard
-        addEvent(document, "keydown", function(ev) {
-            var ev = ev || window.event;
-            that.activeKey = ev.keyCode;
-        });
-        addEvent(document, "keyup", function(ev) {
-            that.activeKey = null;
-        });
 
         // create border
         this.border = new createjs.Shape();
@@ -367,7 +361,7 @@ this.createjs.util = this.createjs.util || {};
         }
     };
 
-    // overide methods
+    // override methods
     // copy before override
     p.Container_draw = p.draw;
     p.draw = function(ctx, ignoreCache) {
