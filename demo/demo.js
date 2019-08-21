@@ -25,9 +25,19 @@ function init() {
 	var top = new createjs.Container();
 	top.name = "top";
 	stage.addChild(top);
+
+	// define boundary
+	var stageBoundary = new createjs.Rectangle(canvas.width*0.1, canvas.height*0.1, canvas.width*0.8, canvas.height*0.8);
+	var boundaryLine = new createjs.Shape();
+	boundaryLine.graphics
+		.beginStroke("blue")
+		.drawRect(stageBoundary.x, stageBoundary.y, stageBoundary.width, stageBoundary.height)
+	top.addChild(boundaryLine);
+
 	let controlsSize = 10 * window.devicePixelRatio;
-	selectTool = new createjs.util.FreeTransformTool("#057", true, "rgba(255,255,255,0.8)", controlsSize);
+	selectTool = new createjs.util.FreeTransformTool("#057", true, "rgba(255,255,255,0.8)", controlsSize, stageBoundary);
 	selectTool.name = "transform";
+
 	top.addChild(selectTool);
 
 	// load the source image:
@@ -120,7 +130,9 @@ function handleResize() {
 	//var h = window.innerHeight-2;
 	
     stage.canvas.width = w;
-    //stage.canvas.height = h;
+	//stage.canvas.height = h;
+	
+	// TODO: update borders, and constrain elements
     stage.update();
 }
 
