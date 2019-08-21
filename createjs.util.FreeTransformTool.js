@@ -14,27 +14,33 @@ this.createjs.util = this.createjs.util || {};
     function calcDistance(x1, y1, x2, y2) {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
-         /**
-         * Force a rectangle to always be inside another by
-         * updating location and size.
-         * @param {createjs.Rectangle} rect 
-         * @param {createjs.Rectangle} container 
-         */
-        function constrainRectTo(rect, container) {
-            if (rect.x <= container.x) {
-                rect.x = container.x;
-            }
-            if (rect.x + rect.width > container.x + container.width) {
-                rect.x = container.x + container.width - rect.width;
-            }
-            if (rect.y <= container.y) {
-                rect.y = container.y;
-            }
-            if (rect.y + rect.height > container.y + container.height) {
-                rect.y = container.y + container.height - rect.height;
-            }
-            return rect;
+    /**
+     * Force a rectangle to always be inside another by
+     * updating location and size.
+     * @param {createjs.Rectangle} rect 
+     * @param {createjs.Rectangle} container 
+     */
+    function constrainRectTo(rect, container) {
+        if (rect.width >= container.width) {
+            rect.width = container.width;
         }
+        if (rect.height >= container.height) {
+            rect.height = container.height;
+        }
+        if (rect.x <= container.x) {
+            rect.x = container.x;
+        }
+        if (rect.x + rect.width > container.x + container.width) {
+            rect.x = container.x + container.width - rect.width;
+        }
+        if (rect.y <= container.y) {
+            rect.y = container.y;
+        }
+        if (rect.y + rect.height > container.y + container.height) {
+            rect.y = container.y + container.height - rect.height;
+        }
+        return rect;
+    }
 
     var FreeTransformTool = function(lineColor, dashed, color, controlsSize, boundary) {
         this.initialize(lineColor, dashed, color, controlsSize, boundary);
@@ -111,36 +117,30 @@ this.createjs.util = this.createjs.util || {};
         this.moveTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
-                var startPoint = {
-                    x: that.target.x,
-                    y: that.target.y
-                };
-                // TODO: get rotation-aware bounds
                 var tBounds = that.target.getBounds();
+                var targetStart = that.target.clone();
                 var scaledReg = {
                     x: that.target.regX * that.target.scaleX,
                     y: that.target.regY * that.target.scaleY
                 }
                 tool.on("pressmove", function(moveEvent) {
                     var newLocation = {
-                        x: startPoint.x + moveEvent.stageX - downEvent.stageX,
-                        y: startPoint.y + moveEvent.stageY - downEvent.stageY
+                        x: targetStart.x + moveEvent.stageX - downEvent.stageX,
+                        y: targetStart.y + moveEvent.stageY - downEvent.stageY
                     }
                     // constrain new location, if there is a boundary
                     if (that.boundary) {
-                        var bounds = new createjs.Rectangle(
+                        var newBounds = new createjs.Rectangle(
                             newLocation.x - scaledReg.x,
                             newLocation.y - scaledReg.y,
                             tBounds.width * that.target.scaleX,
                             tBounds.height * that.target.scaleY
                         );
-                        var constrainedBounds = constrainRectTo(bounds, that.boundary);
+                        var constrainedBounds = constrainRectTo(newBounds, that.boundary);
                         newLocation.x = constrainedBounds.x + scaledReg.x;
                         newLocation.y = constrainedBounds.y + scaledReg.y;
                     }
-                    that.target.x = newLocation.x;
-                    that.target.y = newLocation.y;
-
+                    that.target.set(newLocation);
                     tool.dragDistance = calcDistance(downEvent.stageX, downEvent.stageY, moveEvent.stageX, moveEvent.stageY);
                     that.stage.update();
                 });
@@ -173,17 +173,31 @@ this.createjs.util = this.createjs.util || {};
         this.hScaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
-                var startScale = {
-                    x: that.target.scaleX,
-                    y: that.target.scaleY
-                };
+                var tBounds = that.target.getBounds();
+                var targetStart = that.target.clone().set({
+                    width: tBounds.width,
+                    height: tBounds.height
+                });
                 tool.on("pressmove", function(moveEvent) {
                     var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
                     var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
                     var rescaleFactor = distEnd / distStart;
-                    var newScale = startScale.x * rescaleFactor;
-                    // TTODO: constrain to bounds
-                    that.target.scaleX = newScale;
+                    var updates = {
+                        scaleX: targetStart.scaleX * rescaleFactor
+                    };
+                    // constrain to bounds
+                    if(that.boundary) {
+                        var newBounds = new createjs.Rectangle(
+                            targetStart.x - (targetStart.regX * updates.scaleX),
+                            targetStart.y - (targetStart.regY * targetStart.scaleY),
+                            targetStart.width * updates.scaleX,
+                            targetStart.height
+                        );
+                        var constrainedBounds = constrainRectTo(newBounds, that.boundary);
+                        updates.scaleX = constrainedBounds.width / targetStart.width;
+                        updates.x = constrainedBounds.x + (targetStart.regX * updates.scaleX);
+                    }
+                    that.target.set(updates);
                     that.stage.update();
                 });
                 tool.on("pressup", function() {
@@ -199,12 +213,31 @@ this.createjs.util = this.createjs.util || {};
         this.vScaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
-                var startScale = { x: that.target.scaleX, y: that.target.scaleY };
+                var tBounds = that.target.getBounds();
+                var targetStart = that.target.clone().set({
+                    width: tBounds.width,
+                    height: tBounds.height
+                });
                 tool.on("pressmove", function(moveEvent) {
                     var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
                     var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
                     var rescaleFactor = distEnd / distStart;
-                    that.target.scaleY = startScale.y * rescaleFactor;
+                    var updates = {
+                        scaleY: targetStart.scaleY * rescaleFactor
+                    };
+                    // constrain to bounds
+                    if(that.boundary) {
+                        var newBounds = new createjs.Rectangle(
+                            targetStart.x - (targetStart.regX * updates.scaleX),
+                            targetStart.y - (targetStart.regY * targetStart.scaleY),
+                            targetStart.width,
+                            targetStart.height * updates.scaleY
+                        );
+                        var constrainedBounds = constrainRectTo(newBounds, that.boundary);
+                        updates.scaleY = constrainedBounds.height / targetStart.height;
+                        updates.y = constrainedBounds.y + (targetStart.regY * updates.scaleY);
+                    }
+                    that.target.set(updates);
                     that.stage.update();
                 });
                 tool.on("pressup", function() {
@@ -225,15 +258,34 @@ this.createjs.util = this.createjs.util || {};
         this.scaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
-                var startScale = { x: that.target.scaleX, y: that.target.scaleY };
+                var tBounds = that.target.getBounds();
+                var targetStart = that.target.clone().set({
+                    width: tBounds.width,
+                    height: tBounds.height
+                });
                 tool.on("pressmove", function(moveEvent) {
                     var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
                     var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
                     var rescaleFactor = distEnd / distStart;
-                    // TTODO: constrain to bounds
-                    // evenly apply rescaling factor to both axis
-                    that.target.scaleX = startScale.x * rescaleFactor;
-                    that.target.scaleY = startScale.y * rescaleFactor;
+                    var updates = {
+                        scaleX: targetStart.scaleX * rescaleFactor,
+                        scaleY: targetStart.scaleY * rescaleFactor
+                    };
+                    // constrain to bounds
+                    if(that.boundary) {
+                        var newBounds = new createjs.Rectangle(
+                            targetStart.x - (targetStart.regX * updates.scaleX),
+                            targetStart.y - (targetStart.regY * targetStart.scaleY),
+                            targetStart.width * updates.scaleX,
+                            targetStart.height * updates.scaleY
+                        );
+                        var constrainedBounds = constrainRectTo(newBounds, that.boundary);
+                        updates.scaleX = constrainedBounds.width / targetStart.width;
+                        updates.scaleY = constrainedBounds.height / targetStart.height;
+                        updates.x = constrainedBounds.x + (targetStart.regX * updates.scaleX);
+                        updates.y = constrainedBounds.y + (targetStart.regY * updates.scaleY);
+                    }
+                    that.target.set(updates);
                     that.stage.update();
                 });
                 tool.on("pressup", function() {
