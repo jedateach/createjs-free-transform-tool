@@ -48,7 +48,6 @@ this.createjs.util = this.createjs.util || {};
     p.hScaleTool = null;
     p.vScaleTool = null;
     p.rotateTool = null;
-    p.rotateTether = null;
     p.target = null;
     p.border = null;
     p.dashed = null;
@@ -76,11 +75,6 @@ this.createjs.util = this.createjs.util || {};
         this.border = new createjs.Shape();
         this.border.color = lineColor;
         this.addChild(this.border);
-
-        // line attaching rotate tool to border
-        this.rotateTether = new createjs.Shape();
-        this.rotateTether.color = lineColor;
-        this.addChild(this.rotateTether);
 
         function addToolTip(shape, name, cursor) {
             shape.on("mouseover", function() {
@@ -146,17 +140,14 @@ this.createjs.util = this.createjs.util || {};
                     }
                     that.target.x = newLocation.x;
                     that.target.y = newLocation.y;
-                    var h = (moveEvent.stageX - downEvent.stageX) / scale;
-                    var v = (moveEvent.stageY - downEvent.stageY) / scale;
-                    that.target.x = startPoint.x + h;
-                    that.target.y = startPoint.y + v;
-                    tool.movedDistance = calcDistance(downEvent.stageX, downEvent.stageY, moveEvent.stageX, moveEvent.stageY);
+
+                    tool.dragDistance = calcDistance(downEvent.stageX, downEvent.stageY, moveEvent.stageX, moveEvent.stageY);
                     that.stage.update();
                 });
                 tool.on("pressup", function(upEvent) {
                     tool.removeAllEventListeners("pressmove");
                     upEvent.stopPropagation();
-                    tool.movedDistance = 0;
+                    tool.dragDistance = 0;
                 });
             }
         });
@@ -166,7 +157,7 @@ this.createjs.util = this.createjs.util || {};
             // which helps on mobile devices, where it's difficult to 
             // tap without dragging slightly
             var movedThreshold = 10;
-            if(clickEvent.currentTarget.movedDistance < movedThreshold) {
+            if(clickEvent.currentTarget.dragDistance < movedThreshold) {
                 that.unselect();
                 that.stage.update();
             }
@@ -365,20 +356,10 @@ this.createjs.util = this.createjs.util || {};
             this.vScaleTool.scaleY = toolScaleY;
 
             // rotate tool
-            this.rotateTool.x = 0;
-            this.rotateTool.y = -bounds.height;
+            this.rotateTool.x = bounds.width/2;
+            this.rotateTool.y = -bounds.height/2;
             this.rotateTool.scaleX = toolScaleX;
             this.rotateTool.scaleY = toolScaleY;
-
-            this.rotateTether.graphics.clear();
-            if(this.dashed) {
-                this.rotateTether.graphics.setStrokeDash([5 / this.scaleY, 5 / this.scaleY], 0);
-            } 
-            this.rotateTether.graphics
-                .beginStroke(this.border.color)
-                .setStrokeStyle(this.controlStrokeThickness / this.scaleX)
-                .moveTo(this.rotateTool.x, this.rotateTool.y)
-                .lineTo(this.regX, -bounds.height/2);
 
             this.visible = true;
         } else {
