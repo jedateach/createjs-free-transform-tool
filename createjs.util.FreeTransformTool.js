@@ -14,9 +14,30 @@ this.createjs.util = this.createjs.util || {};
     function calcDistance(x1, y1, x2, y2) {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
+         /**
+         * Force a rectangle to always be inside another by
+         * updating location and size.
+         * @param {createjs.Rectangle} rect 
+         * @param {createjs.Rectangle} container 
+         */
+        function constrainRectTo(rect, container) {
+            if (rect.x <= container.x) {
+                rect.x = container.x;
+            }
+            if (rect.x + rect.width > container.x + container.width) {
+                rect.x = container.x + container.width - rect.width;
+            }
+            if (rect.y <= container.y) {
+                rect.y = container.y;
+            }
+            if (rect.y + rect.height > container.y + container.height) {
+                rect.y = container.y + container.height - rect.height;
+            }
+            return rect;
+        }
 
-    var FreeTransformTool = function(lineColor, dashed, color, size) {
-        this.initialize(lineColor, dashed, color, size);
+    var FreeTransformTool = function(lineColor, dashed, color, controlsSize, boundary) {
+        this.initialize(lineColor, dashed, color, controlsSize, boundary);
     };
     var p = FreeTransformTool.prototype = new createjs.Container();
 
@@ -31,11 +52,12 @@ this.createjs.util = this.createjs.util || {};
     p.target = null;
     p.border = null;
     p.dashed = null;
+    p.boundary = null;
 
     // constructor:
     // copy before override
     p.Container_initialize = p.initialize;
-    p.initialize = function(lineColor, dashed, color, controlsSize) {
+    p.initialize = function(lineColor, dashed, color, controlsSize, boundary) {
         this.Container_initialize();
 
         // default values
@@ -45,6 +67,8 @@ this.createjs.util = this.createjs.util || {};
 
         this.controlStrokeThickness = 1;        
         this.dashed = dashed === undefined ? true : dashed;
+
+        this.boundary = boundary === undefined ? null : boundary;
 
         var that = this;
 
@@ -93,9 +117,35 @@ this.createjs.util = this.createjs.util || {};
         this.moveTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
-                var scale = that.stage.scaleX;
-                var startPoint = {x: that.target.x, y: that.target.y};
+                var startPoint = {
+                    x: that.target.x,
+                    y: that.target.y
+                };
+                // TODO: get rotation-aware bounds
+                var tBounds = that.target.getBounds();
+                var scaledReg = {
+                    x: that.target.regX * that.target.scaleX,
+                    y: that.target.regY * that.target.scaleY
+                }
                 tool.on("pressmove", function(moveEvent) {
+                    var newLocation = {
+                        x: startPoint.x + moveEvent.stageX - downEvent.stageX,
+                        y: startPoint.y + moveEvent.stageY - downEvent.stageY
+                    }
+                    // constrain new location, if there is a boundary
+                    if (that.boundary) {
+                        var bounds = new createjs.Rectangle(
+                            newLocation.x - scaledReg.x,
+                            newLocation.y - scaledReg.y,
+                            tBounds.width * that.target.scaleX,
+                            tBounds.height * that.target.scaleY
+                        );
+                        var constrainedBounds = constrainRectTo(bounds, that.boundary);
+                        newLocation.x = constrainedBounds.x + scaledReg.x;
+                        newLocation.y = constrainedBounds.y + scaledReg.y;
+                    }
+                    that.target.x = newLocation.x;
+                    that.target.y = newLocation.y;
                     var h = (moveEvent.stageX - downEvent.stageX) / scale;
                     var v = (moveEvent.stageY - downEvent.stageY) / scale;
                     that.target.x = startPoint.x + h;
@@ -132,12 +182,17 @@ this.createjs.util = this.createjs.util || {};
         this.hScaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
-                var startScale = { x: that.target.scaleX, y: that.target.scaleY };
+                var startScale = {
+                    x: that.target.scaleX,
+                    y: that.target.scaleY
+                };
                 tool.on("pressmove", function(moveEvent) {
                     var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
                     var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
                     var rescaleFactor = distEnd / distStart;
-                    that.target.scaleX = startScale.x * rescaleFactor;
+                    var newScale = startScale.x * rescaleFactor;
+                    // TTODO: constrain to bounds
+                    that.target.scaleX = newScale;
                     that.stage.update();
                 });
                 tool.on("pressup", function() {
@@ -184,6 +239,7 @@ this.createjs.util = this.createjs.util || {};
                     var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
                     var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
                     var rescaleFactor = distEnd / distStart;
+                    // TTODO: constrain to bounds
                     // evenly apply rescaling factor to both axis
                     that.target.scaleX = startScale.x * rescaleFactor;
                     that.target.scaleY = startScale.y * rescaleFactor;
@@ -224,6 +280,7 @@ this.createjs.util = this.createjs.util || {};
                     var endAngle = calcAngleDegrees(relativeEndPoint.x , relativeEndPoint.y);
                     var startAngle = calcAngleDegrees(relativeStartPoint.x, relativeStartPoint.y);
                     var deltaAngle = endAngle - startAngle;
+                    // TTODO: constrain to bounds
                     that.target.rotation = startRotation + deltaAngle;
                     that.stage.update();
                 });
