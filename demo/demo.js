@@ -7,7 +7,12 @@ var dragStarted;	// indicates whether we are currently in a drag operation
 var offset;
 var update = true;
 
+var boundary;
+var boundaryLine;
+
 var selectTool;
+
+var container;
 
 function init() {
 	// create stage and point it to the canvas:
@@ -27,15 +32,13 @@ function init() {
 	stage.addChild(top);
 
 	// define boundary
-	var stageBoundary = new createjs.Rectangle(canvas.width*0.1, canvas.height*0.1, canvas.width*0.8, canvas.height*0.8);
-	var boundaryLine = new createjs.Shape();
-	boundaryLine.graphics
-		.beginStroke("blue")
-		.drawRect(stageBoundary.x, stageBoundary.y, stageBoundary.width, stageBoundary.height)
+	boundary = new createjs.Rectangle();
+	updateBoundary(boundary);
+	boundaryLine = new createjs.Shape();
 	top.addChild(boundaryLine);
 
 	let controlsSize = 10 * window.devicePixelRatio;
-	selectTool = new createjs.util.FreeTransformTool("#057", true, "rgba(255,255,255,0.8)", controlsSize, stageBoundary);
+	selectTool = new createjs.util.FreeTransformTool("#057", true, "rgba(255,255,255,0.8)", controlsSize, boundary);
 	selectTool.name = "transform";
 
 	top.addChild(selectTool);
@@ -44,18 +47,42 @@ function init() {
 	var image = new Image();
 	image.src = "demo/daisy.png";
 	image.onload = handleImageLoad;
-
-	handleResize();
 }
 
 function stop() {
 	createjs.Ticker.removeEventListener("tick", tick);
 }
 
+function updateBoundary(boundary) {
+	var top = canvas.height * 0.1;
+	var left = canvas.width * 0.1;
+	var padding = Math.min(top, left);
+	boundary.setValues(
+		padding,
+		padding,
+		canvas.width - padding*2,
+		canvas.height - padding*2
+	);
+}
+
+function drawBoundary() {
+	boundaryLine.graphics
+		.clear()
+		.beginStroke("rgba(100, 100, 100, 0.5)")
+		.setStrokeDash([20, 4])
+		.drawRect(boundary.x, boundary.y, boundary.width, boundary.height);
+}
+
+function constrainStageObjects(objects) {
+	objects.forEach(function(obj) {
+		createjs.util.constrainObjectTo(obj, boundary);
+	});
+}
+
 function handleImageLoad(event) {
 	var image = event.target;
 	var bitmap;
-	var container = new createjs.Container();
+	container = new createjs.Container();
 	stage.addChildAt(container, 0);
 
 	// Shape
@@ -104,6 +131,8 @@ function handleImageLoad(event) {
 
 	createjs.Ticker.addEventListener("tick", tick);
 
+	handleResize();
+
 }
 
 function clickToSelect(displayObject) {
@@ -122,18 +151,22 @@ function tick(event) {
 	}
 }
 
-
 var containerElement = document.getElementById("CanvasContainer");
 window.addEventListener("resize", handleResize);
 function handleResize() {
+	selectTool.unselect();
     var w = containerElement.clientWidth; // -2 accounts for the border
 	//var h = window.innerHeight-2;
 	
     stage.canvas.width = w;
 	//stage.canvas.height = h;
-	
-	// TODO: update borders, and constrain elements
-    stage.update();
+
+	updateBoundary(boundary);
+	// TODO: constrain all elements
+	constrainStageObjects(container.children);
+
+	drawBoundary();
+	stage.update();
 }
 
 init();
