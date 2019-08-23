@@ -95,6 +95,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
         color = color || "rgba(255,255,255,0.8)";
         controlsSize = controlsSize || 10;
 
+        this.controlsDim = 0.15;
         this.controlStrokeThickness = 1;        
         this.dashed = dashed === undefined ? true : dashed;
 
@@ -149,6 +150,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                     y: that.target.regY * that.target.scaleY
                 }
                 tool.on("pressmove", function(moveEvent) {
+                    that.alpha = that.controlsDim;
                     var newLocation = {
                         x: targetStart.x + moveEvent.stageX - downEvent.stageX,
                         y: targetStart.y + moveEvent.stageY - downEvent.stageY
@@ -170,9 +172,11 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                     that.stage.update();
                 });
                 tool.on("pressup", function(upEvent) {
+                    that.alpha = 1;
                     tool.removeAllEventListeners("pressmove");
                     upEvent.stopPropagation();
                     tool.dragDistance = 0;
+                    that.stage.update();
                 });
             }
         });
@@ -194,7 +198,6 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
         // init hScale tool
         this.hScaleTool = createHandle('Stretch', 'e-resize');
         this.hScaleTool.graphics.drawRect(0, 0, controlsSize, controlsSize);
-        this.hScaleTool.alpha = 0.8;
         this.hScaleTool.on("mousedown", function(downEvent) {
             if (that.target) {
                 var tool = downEvent.currentTarget;
@@ -204,6 +207,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                     height: tBounds.height
                 });
                 tool.on("pressmove", function(moveEvent) {
+                    that.alpha = that.controlsDim;
                     var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
                     var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
                     var rescaleFactor = distEnd / distStart;
@@ -227,6 +231,8 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                 });
                 tool.on("pressup", function() {
                     tool.removeAllEventListeners("pressmove");
+                    that.alpha = 1;
+                    that.stage.update();
                 });
             }
         });
@@ -244,6 +250,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                     height: tBounds.height
                 });
                 tool.on("pressmove", function(moveEvent) {
+                    that.alpha = that.controlsDim;
                     var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
                     var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
                     var rescaleFactor = distEnd / distStart;
@@ -267,6 +274,8 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                 });
                 tool.on("pressup", function() {
                     tool.removeAllEventListeners("pressmove");
+                    that.alpha = 1;
+                    that.stage.update();
                 });
             }
         });
@@ -289,6 +298,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                     height: tBounds.height
                 });
                 tool.on("pressmove", function(moveEvent) {
+                    that.alpha = that.controlsDim;
                     var distStart = calcDistance(downEvent.stageX, downEvent.stageY, that.target.x, that.target.y);
                     var distEnd = calcDistance(moveEvent.stageX, moveEvent.stageY, that.target.x, that.target.y);
                     var rescaleFactor = distEnd / distStart;
@@ -315,6 +325,8 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                 });
                 tool.on("pressup", function() {
                     tool.removeAllEventListeners("pressmove");
+                    that.alpha = 1;
+                    that.stage.update();
                 });
             }
         });
@@ -336,6 +348,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                 var tool = downEvent.currentTarget;
                 var startRotation = that.target.rotation;
                 tool.on("pressmove", function(moveEvent) {
+                    that.alpha = 0.1;
                     // the drag point is relative to the display object x,y position on the stage (it's registration point)
                     var relativeStartPoint = {
                         x: downEvent.stageX - that.target.x,
@@ -354,6 +367,8 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                 });
                 tool.on("pressup", function() {
                     tool.removeAllEventListeners("pressmove");
+                    that.alpha = 1;
+                    that.stage.update();
                 });
             }
         });
