@@ -310,7 +310,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
                     if(that.boundary) {
                         var newBounds = new createjs.Rectangle(
                             targetStart.x - (targetStart.regX * updates.scaleX),
-                            targetStart.y - (targetStart.regY * targetStart.scaleY),
+                            targetStart.y - (targetStart.regY * updates.scaleY),
                             targetStart.width * updates.scaleX,
                             targetStart.height * updates.scaleY
                         );
