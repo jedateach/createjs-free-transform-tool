@@ -2,13 +2,9 @@
 
 Update border, and constrain elements
 
-## Build test, and CI infrastructure
+## Build test infrastructure
 
-* Continuous deployment via Travis CI to npm registry from tags
-* Continuous integration on PRs / master
 * Build out test suite
-
-* Integrate development version into printmighty project?
 
 ## Tests
 
