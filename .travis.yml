@@ -2,4 +2,11 @@ language: node_js
 addons:
   chrome: stable
 node_js:
-  - 10
+- 10
+deploy:
+  provider: npm
+  email: jeremy@burnbright.net
+  api_key:
+    secure: f4BF1MIiOOTPOkS9XyB/HmeWv6OKcR/xx8+Ij4g3M5HSTnzjVMoPZl0XJc9f8Ltfz63hHWe0gcjbhgmApA7hj4nhPX/w+bROw3hAnspwM/m6ABjejEn9+6b2cgHDQ7fdX7gWPitMmgv+Kbq8c2sP+kg8sG1UawWLpxoyGHjIqApiweXU/AqP5aLXsegVGXjHrRnmvafV2QJ3O+2viU0chf7Lg2XAZihODw4kWVZZxN/ZQaPDYS96FrGP4wNPySrWwxs7z1W4zqFAOkkgP5W5ha9F1YVkCPYIqZKwgv2rAd6nTVbAm9wmNlf2hWl6CqkwCH4al/nwTGJmmoWVviES+nPsp0UX0H7QEeWkhxMwmdVQNoiMbK44Y5VJ9nVI5fWHudJ9SJ81c2EGVCq3SHLRcMnkckBoMzYsgpEGhRuttILr7ne/Pb10QwpJHEX8CZJX414ddKAh3WJkoVPKefF63AlInKIlWymY/cgLN6w5JvTuMzWA22wiSe19UO78GsamEbdgL3ntQiyHAbVPjNhyv3rbjk8+6hYbe3tZm10uNyXlRwIpAsdOCQWVSMSrDfk0cG/FD643sMzBrm+divCPtz8SVUhfm0zOO8TcE2ug2M+Mt/KSQ9xnE4bUdIARps7qe8FtfKTTU68sxg3QjQ2qtIrorE4GYRyUupCXeRz3Bnk=
+  on:
+    tags: true
