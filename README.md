@@ -1,5 +1,7 @@
 # CreateJS: EaselJS - Free Transform Tool
 
+[![Build Status](https://travis-ci.org/jedateach/createjs-free-transform-tool.svg?branch=master)](https://travis-ci.org/jedateach/createjs-free-transform-tool)
+
 Provides controls for transforming position, size, and rotation of CreateJS Display Objects.
 
 ## Features
