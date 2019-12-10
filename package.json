@@ -2,22 +2,37 @@
   "name": "createjs-free-transform-tool",
   "version": "1.0.0",
   "description": "Provides ability to free transform CreateJS Display Objects",
-  "main": "createjs.util.FreeTransformTool.js",
-  "scripts": {
-    "start": "http-server .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "keywords": [
+    "canvas",
+    "createjs",
+    "easeljs",
+    "tool",
+    "transform"
+  ],
+  "homepage": "https://github.com/jedateach/createjs-free-transform-tool#readme",
+  "bugs": {
+    "url": "https://github.com/jedateach/createjs-free-transform-tool/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jedateach/createjs-free-transform-tool.git"
   },
-  "author": "",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jedateach/createjs-free-transform-tool/issues"
+  "author": "Jeremy Shipman",
+  "files": [
+    "createjs.util.FreeTransformTool.js"
+  ],
+  "browser": "createjs.util.FreeTransformTool.js",
+  "scripts": {
+    "start": "http-server .",
+    "lint": "eslint ./*FreeTransformTool.js",
+    "test": "npm run lint"
   },
-  "homepage": "https://github.com/jedateach/createjs-free-transform-tool#readme",
   "devDependencies": {
-    "http-server": "^0.11.1"
+    "eslint": "^6.7.2",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "http-server": "^0.11.1",
+    "prettier": "^1.19.1"
   }
 }
