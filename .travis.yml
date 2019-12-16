@@ -2,7 +2,7 @@ language: node_js
 addons:
   chrome: stable
 node_js:
-- 10
+  - 10
 deploy:
   provider: npm
   email: jeremy@burnbright.net

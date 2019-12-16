@@ -14,10 +14,23 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      {
+        pattern: "tests/images/*.*",
+        watched: false,
+        included: false,
+        served: true,
+        nocache: false
+      },
+      "module-shim.js",
+      "node_modules/pixelmatch/index.js",
       "demo/easeljs.js",
       "createjs.util.FreeTransformTool.js",
       "tests/*.js"
     ],
+
+    proxies: {
+      "/img/": "/base/tests/images/"
+    },
 
     // list of files / patterns to exclude
     exclude: [],
@@ -29,7 +42,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress"],
+    reporters: ["kjhtml"],
 
     // web server port
     port: 9876,
@@ -47,6 +60,10 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ["Chrome"],
+
+    client: {
+      clearContext: false
+    },
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

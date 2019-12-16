@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@types/createjs": "0.0.29",
+    "@types/pixelmatch": "^5.0.0",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-jasmine": "^4.1.0",
@@ -41,6 +42,8 @@
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^3.1.0",
     "karma-jasmine": "^2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.2",
+    "pixelmatch": "^5.1.0",
     "prettier": "^1.19.1"
   }
 }
