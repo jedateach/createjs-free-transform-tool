@@ -1,8 +1,8 @@
-beforeAll(function() {
-  this.stage = new createjs.Stage();
-});
-
-function imgToData(img) {
+/**
+ * @param {HTMLImageElement} img
+ * @returns {ImageData}
+ */
+function imgToImageData(img) {
   var canvas = document.createElement("canvas");
   var context = canvas.getContext("2d");
   canvas.width = img.naturalWidth;
@@ -11,6 +11,10 @@ function imgToData(img) {
   return context.getImageData(0, 0, canvas.width, canvas.height);
 }
 
+/**
+ * @param {String} url
+ * @returns {Promise}
+ */
 function loadImage(url) {
   var img = new Image();
   img.src = url;
@@ -18,3 +22,7 @@ function loadImage(url) {
     img.onload = () => resolve(img);
   });
 }
+
+beforeAll(function() {
+  this.stage = new createjs.Stage();
+});

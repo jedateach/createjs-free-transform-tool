@@ -28,7 +28,7 @@
     "lint": "eslint ./*FreeTransformTool.js",
     "test": "npm run lint && npm run test:ci",
     "test:ci": "karma start --browsers=ChromeHeadless --single-run",
-    "test:server": "karma start"
+    "test:server": "karma start --reporters=kjhtml"
   },
   "devDependencies": {
     "@types/createjs": "0.0.29",
