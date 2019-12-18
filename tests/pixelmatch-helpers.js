@@ -21,12 +21,42 @@ function createCanvasFromImageData(imageData) {
   return canvas;
 }
 
-function buildHTMLError(message, actualCanvas, expectedCanvas, diffCanvas) {
+function inBrowser() {
+  return typeof document !== undefined;
+}
+
+function styleCanvas(canvas) {
+  canvas.style.border = "1px solid #ddd";
+  canvas.style.background = "white";
+}
+
+function buildError(
+  message,
+  actualCanvas,
+  expectedCanvas = null,
+  diffCanvas = null
+) {
+  if (!inBrowser()) {
+    return message;
+  }
   let html = buildEl("div", message);
-  // TODO: improve error styling
-  html.appendChild(actualCanvas);
-  html.appendChild(expectedCanvas);
-  html.appendChild(diffCanvas);
+
+  styleCanvas(actualCanvas);
+  let actualDiv = buildEl("div", "Actual:<br/> ");
+  actualDiv.appendChild(actualCanvas);
+  html.appendChild(actualDiv);
+  if (expectedCanvas) {
+    styleCanvas(expectedCanvas);
+    let expectedDiv = buildEl("div", "Expected:<br/> ");
+    expectedDiv.appendChild(expectedCanvas);
+    html.appendChild(expectedDiv);
+  }
+  if (diffCanvas) {
+    styleCanvas(diffCanvas);
+    let diffDiv = buildEl("div", "Diff:<br/> ");
+    diffDiv.appendChild(diffCanvas);
+    html.appendChild(diffDiv);
+  }
   return html;
 }
 
@@ -35,6 +65,17 @@ let imageMatchers = {
     return {
       compare(actual, expected) {
         var result = {};
+
+        if (!expected) {
+          let actualCanvas = createCanvasFromImageData(actual);
+          result.message = buildError(
+            "No expected image defined",
+            actualCanvas
+          );
+          result.pass = false;
+          return result;
+        }
+
         let width = expected.width;
         let height = expected.height;
 
@@ -63,16 +104,13 @@ let imageMatchers = {
               100
             ).toFixed(0);
             let message = `Images have ${differingPixels}/${totalPixels} (${percentDifference}%) differing pixels`;
-            if (typeof document !== undefined) {
-              result.message = buildHTMLError(
-                message,
-                actualCanvas,
-                expectedCanvas,
-                diffCanvas
-              );
-            } else {
-              result.message = message;
-            }
+
+            result.message = buildError(
+              message,
+              actualCanvas,
+              expectedCanvas,
+              diffCanvas
+            );
           }
         } catch (error) {
           result.pass = false;

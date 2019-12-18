@@ -7,31 +7,31 @@ describe("Smoke checks", function() {
 
 describe("Free transform tool", function() {
   beforeEach(function() {
+    this.canvas = getCanvas(100, 100);
+    this.stage = new createjs.Stage(this.canvas);
     this.container = new createjs.Container();
     this.stage.addChildAt(this.container, 0);
+
+    this.getImageData = () => {
+      return this.canvas
+        .getContext("2d")
+        .getImageData(0, 0, this.canvas.width, this.canvas.height);
+    };
   });
 
-  it("can draw on the easel", function() {
-    // Shape
+  it("can select an ellipse shape", async function() {
     var ellipse = new createjs.Shape();
-    // ellipse.x = canvas.width / 2;
-    // ellipse.y = canvas.height / 2;
-    ellipse.setBounds(0, 0, 200, 300);
+    ellipse.x = this.canvas.width / 2;
+    ellipse.y = this.canvas.height / 2;
+    ellipse.setBounds(0, 0, 20, 30);
     ellipse.regX = (ellipse.getBounds().width / 2) | 0;
-    ellipse.regY = (ellipse.getBounds().height / 6) | 0;
-    ellipse.graphics
-      .setStrokeStyle(4)
-      .beginRadialGradientFill(["#FFF", "#35E"], [1, 0], 0, 0, 200, 30, -50, 40)
-      .drawEllipse(0, 0, 200, 300);
-
+    ellipse.regY = (ellipse.getBounds().height / 2) | 0;
+    ellipse.graphics.beginFill("#35E").drawEllipse(0, 0, 20, 30);
     this.container.addChild(ellipse);
+    this.stage.update();
 
-    // TODO: compare pixels
+    let imgData = imgToImageData(await loadImage("img/selected-ellipse.png"));
 
-    expect(createjs.util.FreeTransformTool).toBeTruthy();
+    expect(this.getImageData()).toVisuallyEqual(imgData);
   });
 });
-
-// TODO: render something with easel
-// TODO: load reference images
-// TODO: difference with image lib

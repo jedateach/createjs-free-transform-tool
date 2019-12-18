@@ -22,7 +22,3 @@ function loadImage(url) {
     img.onload = () => resolve(img);
   });
 }
-
-beforeAll(function() {
-  this.stage = new createjs.Stage();
-});
