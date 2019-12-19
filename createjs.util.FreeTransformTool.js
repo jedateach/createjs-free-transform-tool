@@ -454,26 +454,20 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
       // borders
       this.border.graphics.clear();
       if (this.dashed) {
-        this.border.graphics.setStrokeDash(
-          [5 / this.scaleX, 5 / this.scaleX],
-          0
-        );
+        this.border.graphics.setStrokeDash([5, 5], 0);
       }
       this.border.graphics
         .beginStroke(this.border.color)
-        .setStrokeStyle(this.controlStrokeThickness / this.scaleY)
+        .setStrokeStyle(this.controlStrokeThickness, 0, 0, 10, true)
         .moveTo(-this.width / 2, -this.height / 2)
         .lineTo(this.width / 2, -this.height / 2)
         .moveTo(this.width / 2, this.height / 2)
         .lineTo(-this.width / 2, this.height / 2);
       if (this.dashed) {
-        this.border.graphics.setStrokeDash(
-          [5 / this.scaleY, 5 / this.scaleY],
-          0
-        );
+        this.border.graphics.setStrokeDash([5, 5], 0);
       }
       this.border.graphics
-        .setStrokeStyle(this.controlStrokeThickness / this.scaleX)
+        .setStrokeStyle(this.controlStrokeThickness, 0, 0, 10, true)
         .moveTo(-this.width / 2, -this.height / 2)
         .lineTo(-this.width / 2, this.height / 2)
         .moveTo(this.width / 2, this.height / 2)
