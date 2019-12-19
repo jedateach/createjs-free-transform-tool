@@ -67,7 +67,7 @@ describe("Free transform tool", function() {
     expect(this.getImageData()).toVisuallyEqual(imgData);
   });
 
-  it("can select text", async function() {
+  xit("can select text", async function() {
     var text = new createjs.Text("Hello\nWorld", "40px Arial", "#052865");
     var textBounds = text.getBounds();
     text.regX = textBounds.width / 2;
