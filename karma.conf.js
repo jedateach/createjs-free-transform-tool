@@ -65,6 +65,10 @@ module.exports = function(config) {
         base: "Chrome",
         flags: ["--disable-gpu"]
       },
+      ChromeHeadlessWithoutGPU: {
+        base: "ChromeHeadless",
+        flags: ["--disable-gpu"]
+      },
       FirefoxWithoutGPU: {
         base: "Firefox",
         prefs: {

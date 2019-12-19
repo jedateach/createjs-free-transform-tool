@@ -1,4 +1,5 @@
 language: node_js
+# TODO: break out browsers into matrix
 addons:
   chrome: stable
 node_js:
