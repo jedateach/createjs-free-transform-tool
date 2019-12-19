@@ -102,7 +102,7 @@ let imageMatchers = {
             let percentDifference = (
               (differingPixels / totalPixels) *
               100
-            ).toFixed(0);
+            ).toFixed(2);
             let message = `Images have ${differingPixels}/${totalPixels} (${percentDifference}%) differing pixels`;
 
             result.message = buildError(
@@ -113,8 +113,14 @@ let imageMatchers = {
             );
           }
         } catch (error) {
+          let actualCanvas = createCanvasFromImageData(actual);
+          let expectedCanvas = createCanvasFromImageData(expected);
           result.pass = false;
-          result.message = error.message;
+          result.message = buildError(
+            error.message,
+            actualCanvas,
+            expectedCanvas
+          );
         }
         return result;
       }
