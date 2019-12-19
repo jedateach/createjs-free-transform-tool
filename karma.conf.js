@@ -57,9 +57,21 @@ module.exports = function(config) {
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
 
-    // start these browsers
-    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ["Chrome"],
+    browsers: ["ChromeWithoutGPU", "FirefoxWithoutGPU"],
+
+    // disable gpu to stay consistent with headless renders
+    customLaunchers: {
+      ChromeWithoutGPU: {
+        base: "Chrome",
+        flags: ["--disable-gpu"]
+      },
+      FirefoxWithoutGPU: {
+        base: "Firefox",
+        prefs: {
+          "webgl.disabled": true
+        }
+      }
+    },
 
     client: {
       clearContext: false
