@@ -19,7 +19,7 @@ See the tool in action at: https://jedateach.github.io/createjs-free-transform-t
 
 In order to use this tool you have to:
 
-1. add a new layer to your stage in top of everything
+1. add a new layer to put the transform tool into
 
    ```js
    var top = new createjs.Container();
@@ -35,7 +35,7 @@ In order to use this tool you have to:
    top.addChild(selectTool);
    ```
 
-3. to select any object for example when the user click on that object
+3. to select an when the user clicks it
 
    ```js
    object.on("click", function(evt) {
@@ -43,10 +43,16 @@ In order to use this tool you have to:
    });
    ```
 
-4. to unselect object for example when the user click on the stage
+4. to unselect when user clicks the stage
 
    ```js
    stage.addEventListener("click", function() {
      selectTool.unselect();
    });
    ```
+
+## Text handling
+
+There is a [known issue](https://github.com/CreateJS/EaselJS/issues/235) meaning that text rendering is inconsistent across browsers, when using any [textBaseline](https://www.createjs.com/docs/easeljs/classes/Text.html#property_textBaseline) value other than `"alphabetic"`.
+
+To get around this issue, we've supplied a file `createjs.text-fix.js`, which provides a fix by forcing the `alphabetic` baseline, and performs vertical offset to position text as if it were positioned "top".

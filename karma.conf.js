@@ -24,6 +24,8 @@ module.exports = function(config) {
       "module-shim.js",
       "node_modules/pixelmatch/index.js",
       "demo/easeljs.js",
+      "createjs.text-fix.js",
+      "node_modules/txtjs/dist/txt.js",
       "createjs.util.FreeTransformTool.js",
       "tests/*.js"
     ],

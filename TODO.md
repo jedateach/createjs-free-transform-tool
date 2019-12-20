@@ -11,6 +11,8 @@ Update border, and constrain elements
 ## Tests
 
 - Text is positioned correctly - cross browser support & nodeJS
+  - Read https://github.com/CreateJS/EaselJS/issues/235
+  - try txtjs to see if consistency can be gained
 
 ## Bugs to fix
 
