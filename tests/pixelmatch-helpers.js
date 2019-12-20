@@ -90,7 +90,7 @@ let imageMatchers = {
             diff.data,
             width,
             height,
-            { threshold: 0.1, diffMask: true, alpha: 1, includeAA: false }
+            { threshold: 0.6, diffMask: true, alpha: 1, includeAA: false }
           );
           diffContext.putImageData(diff, 0, 0);
           result.pass = differingPixels === 0;
