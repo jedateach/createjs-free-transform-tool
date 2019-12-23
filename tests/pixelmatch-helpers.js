@@ -21,8 +21,8 @@ function createCanvasFromImageData(imageData) {
   return canvas;
 }
 
-function inBrowser() {
-  return typeof document !== undefined;
+function isHTMLReport() {
+  return !!jasmineRequire.html;
 }
 
 function styleCanvas(canvas) {
@@ -36,8 +36,18 @@ function buildError(
   expectedCanvas = null,
   diffCanvas = null
 ) {
-  if (!inBrowser()) {
-    return message;
+  if (!isHTMLReport()) {
+    let output = message;
+    if (actualCanvas) {
+      output += "\nActual: \n" + actualCanvas.toDataURL();
+    }
+    if (expectedCanvas) {
+      output += "\nExpected: \n" + expectedCanvas.toDataURL();
+    }
+    if (diffCanvas) {
+      output += "\nDiff: \n" + diffCanvas.toDataURL();
+    }
+    return output;
   }
   let html = buildEl("div", message);
 
