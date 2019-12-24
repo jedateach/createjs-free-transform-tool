@@ -27,7 +27,8 @@ describe("Text in EaselJS", function() {
     };
   });
 
-  it("renders text baseline default", async function() {
+  // TODO: this fails on different operating systems that render fonts differently
+  xit("renders text baseline default", async function() {
     var text = this.createText();
     this.container.addChild(text);
     this.stage.update();
