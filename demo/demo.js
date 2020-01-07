@@ -44,13 +44,11 @@ function init() {
   top.addChild(selectTool);
 
   // load the source image:
-  var image = new Image();
-  image.src = "demo/daisy.png";
-  image.onload = handleImageLoad;
-}
+  // var image = new Image();
+  // image.src = "demo/daisy.png";
+  // image.onload = handleImageLoad;
 
-function stop() {
-  createjs.Ticker.removeEventListener("tick", tick);
+  handleImageLoad(null);
 }
 
 function updateBoundary(boundary) {
@@ -80,8 +78,8 @@ function constrainStageObjects(objects) {
 }
 
 function handleImageLoad(event) {
-  var image = event.target;
-  var bitmap;
+  // var image = event.target;
+  // var bitmap;
   container = new createjs.Container();
   stage.addChildAt(container, 0);
 
@@ -100,16 +98,16 @@ function handleImageLoad(event) {
   container.addChild(ellipse);
 
   // Bitmap
-  bitmap = new createjs.Bitmap(image);
-  bitmap.x = canvas.width / 2;
-  bitmap.y = canvas.height / 6;
-  bitmap.rotation = -25 | 0;
-  bitmap.regX = (bitmap.image.width / 2) | 0;
-  bitmap.regY = (bitmap.image.height / 2) | 0;
-  bitmap.name = "flower";
-  bitmap.cursor = "pointer";
-  clickToSelect(bitmap);
-  container.addChild(bitmap);
+  // bitmap = new createjs.Bitmap(image);
+  // bitmap.x = canvas.width / 2;
+  // bitmap.y = canvas.height / 6;
+  // bitmap.rotation = -25 | 0;
+  // bitmap.regX = (bitmap.image.width / 2) | 0;
+  // bitmap.regY = (bitmap.image.height / 2) | 0;
+  // bitmap.name = "flower";
+  // bitmap.cursor = "pointer";
+  // clickToSelect(bitmap);
+  // container.addChild(bitmap);
 
   // Text
   var text = new createjs.Text("Hello\nWorld", "70px Arial", "#052865");
@@ -121,7 +119,6 @@ function handleImageLoad(event) {
   text.y = canvas.height / 2.3;
   text.rotation = 5 | 0;
   text.cursor = "pointer";
-
   var hit = new createjs.Shape();
   hit.graphics
     .beginFill("#000")
@@ -129,6 +126,8 @@ function handleImageLoad(event) {
   text.hitArea = hit;
   clickToSelect(text);
   container.addChild(text);
+
+  // container.addChild(createTxt());
 
   createjs.Ticker.addEventListener("tick", tick);
 
@@ -141,6 +140,14 @@ function clickToSelect(displayObject) {
     selectTool.select(evt.currentTarget, stage);
     update = true;
   });
+}
+
+function createTxt() {
+  var txt = new txt.Text({
+    text: "Hello\nWorld"
+  });
+  clickToSelect(txt);
+  return txt;
 }
 
 function tick(event) {
@@ -169,4 +176,4 @@ function handleResize() {
   stage.update();
 }
 
-init();
+window.onload = init;

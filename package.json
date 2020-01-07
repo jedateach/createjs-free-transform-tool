@@ -45,6 +45,7 @@
     "karma-jasmine": "^2.0.1",
     "karma-jasmine-html-reporter": "^1.4.2",
     "pixelmatch": "^5.1.0",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "txtjs": "^0.9.4"
   }
 }

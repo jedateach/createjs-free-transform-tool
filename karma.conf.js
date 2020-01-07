@@ -24,14 +24,23 @@ module.exports = function(config) {
       "module-shim.js",
       "node_modules/pixelmatch/index.js",
       "demo/easeljs.js",
+      "node_modules/txtjs/dist/txt.js",
       "createjs.text-fix.js",
       "node_modules/txtjs/dist/txt.js",
+      {
+        pattern: "node_modules/txtjs/font/*.txt",
+        watched: false,
+        included: false,
+        served: true,
+        nocache: false
+      },
       "createjs.util.FreeTransformTool.js",
       "tests/*.js"
     ],
 
     proxies: {
-      "/img/": "/base/tests/images/"
+      "/img/": "/base/tests/images/",
+      "/font/": "/base/node_modules/txtjs/font/"
     },
 
     // list of files / patterns to exclude
