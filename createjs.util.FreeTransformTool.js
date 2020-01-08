@@ -17,6 +17,23 @@ function calcDistance(x1, y1, x2, y2) {
 this.createjs.util.calcDistance = calcDistance;
 
 /**
+ * Get object's bounds or make some.
+ * @param {*} obj
+ */
+function getObjBounds(obj) {
+  let bounds = obj.getBounds();
+  if (bounds) {
+    return bounds;
+  }
+  return {
+    x: obj.x,
+    y: obj.y,
+    width: obj.width,
+    height: obj.height
+  };
+}
+
+/**
  * Force a rectangle to always be inside another by
  * updating location and size.
  * @param {createjs.Rectangle} rect
@@ -47,7 +64,7 @@ this.createjs.util.constrainRectTo = constrainRectTo;
 
 // constrains a display object to a given rect
 function constrainObjectTo(obj, rect) {
-  var bounds = obj.getBounds();
+  var bounds = getObjBounds(obj);
   bounds.x = obj.x - obj.regX * obj.scaleX;
   bounds.y = obj.y - obj.regY * obj.scaleY;
   var constrained = new createjs.Rectangle(
@@ -153,7 +170,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
     this.moveTool.on("mousedown", function(downEvent) {
       if (that.target) {
         var tool = downEvent.currentTarget;
-        var tBounds = that.target.getBounds();
+        var tBounds = getObjBounds(that.target);
         var targetStart = that.target.clone();
         var scaledReg = {
           x: that.target.regX * that.target.scaleX,
@@ -216,7 +233,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
     this.hScaleTool.on("mousedown", function(downEvent) {
       if (that.target) {
         var tool = downEvent.currentTarget;
-        var tBounds = that.target.getBounds();
+        var tBounds = getObjBounds(that.target);
         var targetStart = that.target.clone().set({
           width: tBounds.width,
           height: tBounds.height
@@ -269,7 +286,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
     this.vScaleTool.on("mousedown", function(downEvent) {
       if (that.target) {
         var tool = downEvent.currentTarget;
-        var tBounds = that.target.getBounds();
+        var tBounds = getObjBounds(that.target);
         var targetStart = that.target.clone().set({
           width: tBounds.width,
           height: tBounds.height
@@ -327,7 +344,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
     this.scaleTool.on("mousedown", function(downEvent) {
       if (that.target) {
         var tool = downEvent.currentTarget;
-        var tBounds = that.target.getBounds();
+        var tBounds = getObjBounds(that.target);
         var targetStart = that.target.clone().set({
           width: tBounds.width,
           height: tBounds.height
@@ -438,7 +455,7 @@ this.createjs.util.constrainObjectTo = constrainObjectTo;
     if (target) {
       // copy object translation/transformation
       this.target = target;
-      var bounds = target.getBounds();
+      var bounds = getObjBounds(target);
       this.width = bounds.width;
       this.height = bounds.height;
       this.scaleX = target.scaleX;
