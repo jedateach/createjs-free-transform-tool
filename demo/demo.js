@@ -44,11 +44,9 @@ function init() {
   top.addChild(selectTool);
 
   // load the source image:
-  // var image = new Image();
-  // image.src = "demo/daisy.png";
-  // image.onload = handleImageLoad;
-
-  handleImageLoad(null);
+  var image = new Image();
+  image.src = "demo/daisy.png";
+  image.onload = handleImageLoad;
 }
 
 function updateBoundary(boundary) {
@@ -78,12 +76,28 @@ function constrainStageObjects(objects) {
 }
 
 function handleImageLoad(event) {
-  // var image = event.target;
-  // var bitmap;
   container = new createjs.Container();
   stage.addChildAt(container, 0);
 
-  // Shape
+  container.addChild(createEllipse());
+  container.addChild(createBitmap(event.target));
+  container.addChild(createText());
+  container.addChild(createTxtJs());
+
+  createjs.Ticker.addEventListener("tick", tick);
+
+  handleResize();
+}
+
+function clickToSelect(displayObject) {
+  displayObject.on("click", function(evt) {
+    evt.stopPropagation();
+    selectTool.select(evt.currentTarget, stage);
+    update = true;
+  });
+}
+
+function createEllipse() {
   var ellipse = new createjs.Shape();
   ellipse.x = canvas.width / 2;
   ellipse.y = canvas.height / 4;
@@ -95,21 +109,23 @@ function handleImageLoad(event) {
     .beginRadialGradientFill(["#FFF", "#35E"], [1, 0], 0, 0, 200, 30, -50, 40)
     .drawEllipse(0, 0, 200, 300);
   clickToSelect(ellipse);
-  container.addChild(ellipse);
+  return ellipse;
+}
 
-  // Bitmap
-  // bitmap = new createjs.Bitmap(image);
-  // bitmap.x = canvas.width / 2;
-  // bitmap.y = canvas.height / 6;
-  // bitmap.rotation = -25 | 0;
-  // bitmap.regX = (bitmap.image.width / 2) | 0;
-  // bitmap.regY = (bitmap.image.height / 2) | 0;
-  // bitmap.name = "flower";
-  // bitmap.cursor = "pointer";
-  // clickToSelect(bitmap);
-  // container.addChild(bitmap);
+function createBitmap(image) {
+  var bitmap = new createjs.Bitmap(image);
+  bitmap.x = canvas.width / 2;
+  bitmap.y = canvas.height / 6;
+  bitmap.rotation = -25 | 0;
+  bitmap.regX = (bitmap.image.width / 2) | 0;
+  bitmap.regY = (bitmap.image.height / 2) | 0;
+  bitmap.name = "flower";
+  bitmap.cursor = "pointer";
+  clickToSelect(bitmap);
+  return bitmap;
+}
 
-  // Text
+function createText() {
   var text = new createjs.Text("Hello\nWorld", "70px Arial", "#052865");
   var textBounds = text.getBounds();
   text.regX = textBounds.width / 2;
@@ -125,27 +141,45 @@ function handleImageLoad(event) {
     .drawRect(0, 0, text.getBounds().width, text.getBounds().height);
   text.hitArea = hit;
   clickToSelect(text);
-  container.addChild(text);
-
-  // container.addChild(createTxt());
-
-  createjs.Ticker.addEventListener("tick", tick);
-
-  handleResize();
+  return text;
 }
 
-function clickToSelect(displayObject) {
-  displayObject.on("click", function(evt) {
-    evt.stopPropagation();
-    selectTool.select(evt.currentTarget, stage);
-    update = true;
-  });
-}
+var rainbowPallette = [
+  "#FEA3AA",
+  "#F8B88B",
+  "#FAF884",
+  "#BAED91",
+  "#B2CEFE",
+  "#F2A2E8"
+];
 
-function createTxt() {
-  var txt = new txt.Text({
-    text: "Hello\nWorld"
+function createTxtJs() {
+  let value = "Hello txt.js";
+  let style = value.split("").map(function(ch, idx) {
+    return { fillColor: rainbowPallette[idx % rainbowPallette.length] };
   });
+  var txt = new window.txt.Text({
+    text: value,
+    font: "lobster",
+    align: window.txt.Align.TOP_LEFT,
+    singleLine: true,
+    autoReduce: true,
+    autoExpand: true,
+    minSize: 70,
+    maxTracking: 260,
+    tracking: 2,
+    lineHeight: 120,
+    width: 600,
+    height: 120,
+    size: 130,
+    strokeWidth: 1,
+    strokeColor: "#000",
+    style: style,
+    x: canvas.width / 4,
+    y: (canvas.height / 4) * 3
+  });
+  txt.regX = txt.width / 2;
+  txt.regY = txt.height / 2;
   clickToSelect(txt);
   return txt;
 }

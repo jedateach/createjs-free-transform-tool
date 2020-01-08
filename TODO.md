@@ -2,18 +2,6 @@
 
 Update border, and constrain elements
 
-## Build test infrastructure
-
-- Build out test suite
-
-- Provide a BASE64 or URI-encoded image that can be viewed for headless debugging
-
-## Tests
-
-- Text is positioned correctly - cross browser support & nodeJS
-  - Read https://github.com/CreateJS/EaselJS/issues/235
-  - try txtjs to see if consistency can be gained
-
 ## Bugs to fix
 
 - Text can't be center aligned
@@ -46,19 +34,6 @@ Update border, and constrain elements
 - Introduce test suite
 - Split into multiple files
 - Publish to npm
-
-## Display objects
-
-- Bitmaps:yes
-- Text: yes
-- Sprites - animated?
-- Primitive shapes - Ellipse, Rect, Star, Rounded rect: yes
-- Vector shapes: difficulty with svg
-- Container
-
-https://github.com/CreateJS/EaselJS/issues/456#issuecomment-487085826
-
-- Test what happens when you scale the canvas
 
 ## Later
 

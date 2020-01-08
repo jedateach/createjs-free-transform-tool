@@ -17,18 +17,17 @@ describe("Txtjs text in EaselJS", function() {
     };
 
     this.createText = () => {
-      var text = new txt.Text({
+      var text = new window.txt.Text({
         text: "Hello World",
-        font: "raleway",
-        align: txt.Align.TOP_RIGHT,
+        font: "lobster",
+        align: window.txt.Align.TOP_LEFT,
         tracking: -4,
-        lineHeight: 120,
-        width: 600,
-        height: 360,
-        size: 120,
-        x: 10,
-        y: 10
-        // color: "#052865"
+        lineHeight: 90,
+        width: 200,
+        height: 200,
+        size: 60,
+        x: 20,
+        y: 20
       });
       //   var textBounds = text.getBounds();
       //   text.regX = textBounds.width / 2;
@@ -39,9 +38,8 @@ describe("Txtjs text in EaselJS", function() {
     };
   });
 
-  // TODO: this fails on different operating systems that render fonts differently
-  it("renders text baseline default", async function(done) {
-    let imgData = imgToImageData(await loadImage("img/text-baseline-top.png"));
+  it("renders txtjs text", async function(done) {
+    let imgData = imgToImageData(await loadImage("img/txtjs.png"));
 
     var text = this.createText();
     text.complete = () => {

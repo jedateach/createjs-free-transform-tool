@@ -85,4 +85,27 @@ describe("Free transform tool", function() {
 
     expect(this.getImageData()).toVisuallyEqual(imgData);
   });
+
+  it("can select txtjs", async function() {
+    var txt = new window.txt.Text({
+      text: "Hello\nWorld",
+      size: 40,
+      font: "lobster",
+      lineHeight: 40,
+      height: 80
+    });
+    txt.regX = txt.width / 2;
+    txt.regY = txt.height / 2;
+    txt.x = this.canvas.width / 2;
+    txt.y = this.canvas.height / 2.3;
+
+    this.container.addChild(txt);
+
+    this.selectTool.select(txt);
+    this.stage.update();
+
+    let imgData = imgToImageData(await loadImage("img/selected-txtjs.png"));
+
+    expect(this.getImageData()).toVisuallyEqual(imgData);
+  });
 });

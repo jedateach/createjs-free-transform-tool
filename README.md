@@ -9,6 +9,20 @@ Provides controls for transforming position, size, and rotation of CreateJS Disp
 - Transformations are relative to the registration point (ob.regX, obj.regY), which you can choose.
 - Un-obtrusive to your createjs project scene. The tool sits in it's own container layer.
 
+### Display object support
+
+Tested with:
+
+- Bitmaps: yes
+- Text: yes (but there are cross-browser issues)
+- Primitive shapes (eg Ellipse, Rect, Star, Rounded rect): yes, tested with ellipse
+
+Currently untested:
+
+- Sprites - animated?
+- Vector shapes: difficulty with svg
+- Container (grouping)
+
 ## Demo
 
 See the tool in action at: https://jedateach.github.io/createjs-free-transform-tool
