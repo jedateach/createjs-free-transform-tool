@@ -36,7 +36,7 @@
     "cov:instrument": "mkdir -p tmp && nyc instrument dist/esnext/src/freetransform dist/instrumented",
     "cov:view": "nyc report && live-server coverage/lcov-report",
     "test": "run-s lint cov:instrument bundle:lib:cov test:ci",
-    "test:ci": "testem ci .",
+    "test:ci": "HEADLESS=true testem ci .",
     "test:server": "testem server .",
     "watch": "run-p \"build:compile -- --watch\" \"bundle:lib -- --watch\" \"bundle:demo -- --watch\"",
     "lint": "eslint . --ext .ts && prettier --check **/*.ts",
