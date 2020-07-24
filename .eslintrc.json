@@ -1,22 +1,21 @@
 {
   "root": true,
-  "rules": {},
-  "env": {
-    "es6": true,
-    "browser": true,
-    "jasmine": true
-  },
-  "parserOptions": {
-    "ecmaVersion": 2018,
-    "sourceType": "module"
-  },
-  "plugins": ["jasmine"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
   "extends": [
     "eslint:recommended",
-    "plugin:prettier/recommended",
-    "plugin:jasmine/recommended"
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
-  "globals": {
-    "createjs": true
+  "rules": {
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/camelcase": "off",
+    "no-sparse-arrays": "off",
+    "no-prototype-builtins": "off"
   }
 }

@@ -36,10 +36,10 @@ export function constrainRectTo(rect, container) {
 
 // constrains a display object to a given rect
 export function constrainObjectTo(obj, rect) {
-  var bounds = obj.getBounds();
+  const bounds = obj.getBounds();
   bounds.x = obj.x - obj.regX * obj.scaleX;
   bounds.y = obj.y - obj.regY * obj.scaleY;
-  var constrained = new createjs.Rectangle(
+  const constrained = new createjs.Rectangle(
     bounds.x,
     bounds.y,
     bounds.width,
@@ -49,7 +49,7 @@ export function constrainObjectTo(obj, rect) {
   obj.x = constrained.x + obj.regX * obj.scaleX;
   obj.y = constrained.y + obj.regY * obj.scaleY;
   // TODO: work out new scale to apply, rather than overlapping
-  var newScale = {
+  const newScale = {
     x: constrained.width / bounds.width,
     y: constrained.height / bounds.height,
   };

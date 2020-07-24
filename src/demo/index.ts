@@ -1,15 +1,15 @@
 import FreeTransformTool from "freetransform";
 import { constrainObjectTo } from "../freetransform/helpers";
 
-var canvas, stage;
-var update = true;
+let canvas, stage;
+let update = true;
 
-var boundary;
-var boundaryLine;
+let boundary;
+let boundaryLine;
 
-var selectTool;
+let selectTool;
 
-var container;
+let container;
 
 function init() {
   // create stage and point it to the canvas:
@@ -24,7 +24,7 @@ function init() {
   stage.mouseMoveOutside = true; // keep tracking the mouse even when it leaves the canvas
 
   // set up free transform tool
-  var top = new createjs.Container();
+  const top = new createjs.Container();
   top.name = "top";
   stage.addChild(top);
 
@@ -34,7 +34,7 @@ function init() {
   boundaryLine = new createjs.Shape();
   top.addChild(boundaryLine);
 
-  let controlsSize = 10 * window.devicePixelRatio;
+  const controlsSize = 10 * window.devicePixelRatio;
   selectTool = new FreeTransformTool(
     "#057",
     true,
@@ -47,7 +47,7 @@ function init() {
   top.addChild(selectTool);
 
   // load the source image:
-  var image = new Image();
+  const image = new Image();
   image.src = "daisy.png";
   image.onload = handleImageLoad;
 }
@@ -57,9 +57,9 @@ function init() {
 // }
 
 function updateBoundary(boundary) {
-  var top = canvas.height * 0.1;
-  var left = canvas.width * 0.1;
-  var padding = Math.min(top, left);
+  const top = canvas.height * 0.1;
+  const left = canvas.width * 0.1;
+  const padding = Math.min(top, left);
   boundary.setValues(
     padding,
     padding,
@@ -83,13 +83,12 @@ function constrainStageObjects(objects) {
 }
 
 function handleImageLoad(event) {
-  var image = event.target;
-  var bitmap;
+  const image = event.target;
   container = new createjs.Container();
   stage.addChildAt(container, 0);
 
   // Shape
-  var ellipse = new createjs.Shape();
+  const ellipse = new createjs.Shape();
   ellipse.x = canvas.width / 2;
   ellipse.y = canvas.height / 4;
   ellipse.setBounds(0, 0, 200, 300);
@@ -103,7 +102,7 @@ function handleImageLoad(event) {
   container.addChild(ellipse);
 
   // Bitmap
-  bitmap = new createjs.Bitmap(image);
+  const bitmap = new createjs.Bitmap(image);
   bitmap.x = canvas.width / 2;
   bitmap.y = canvas.height / 6;
   bitmap.rotation = -25 | 0;
@@ -115,8 +114,8 @@ function handleImageLoad(event) {
   container.addChild(bitmap);
 
   // Text
-  var text = new createjs.Text("Hello\nWorld", "70px Arial", "#052865");
-  var textBounds = text.getBounds();
+  const text = new createjs.Text("Hello\nWorld", "70px Arial", "#052865");
+  const textBounds = text.getBounds();
   text.regX = textBounds.width / 2;
   text.regY = textBounds.height / 2;
   text.outline = 5;
@@ -125,7 +124,7 @@ function handleImageLoad(event) {
   text.rotation = 5 | 0;
   text.cursor = "pointer";
 
-  var hit = new createjs.Shape();
+  const hit = new createjs.Shape();
   hit.graphics
     .beginFill("#000")
     .drawRect(0, 0, text.getBounds().width, text.getBounds().height);
@@ -154,11 +153,11 @@ function tick(event) {
   }
 }
 
-var containerElement = document.getElementById("CanvasContainer");
+const containerElement = document.getElementById("CanvasContainer");
 window.addEventListener("resize", handleResize);
 function handleResize() {
   selectTool.unselect();
-  var w = containerElement.clientWidth; // -2 accounts for the border
+  const w = containerElement.clientWidth; // -2 accounts for the border
   stage.canvas.width = w;
 
   updateBoundary(boundary);
