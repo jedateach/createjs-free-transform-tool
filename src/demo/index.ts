@@ -1,3 +1,6 @@
+import FreeTransformTool from "freetransform";
+import { constrainObjectTo } from "../freetransform/helpers";
+
 var canvas, stage;
 var update = true;
 
@@ -32,7 +35,7 @@ function init() {
   top.addChild(boundaryLine);
 
   let controlsSize = 10 * window.devicePixelRatio;
-  selectTool = new createjs.util.FreeTransformTool(
+  selectTool = new FreeTransformTool(
     "#057",
     true,
     "rgba(255,255,255,0.8)",
@@ -45,13 +48,13 @@ function init() {
 
   // load the source image:
   var image = new Image();
-  image.src = "demo/daisy.png";
+  image.src = "daisy.png";
   image.onload = handleImageLoad;
 }
 
-function stop() {
-  createjs.Ticker.removeEventListener("tick", tick);
-}
+// function stop() {
+//   createjs.Ticker.removeEventListener("tick", tick);
+// }
 
 function updateBoundary(boundary) {
   var top = canvas.height * 0.1;
@@ -75,7 +78,7 @@ function drawBoundary() {
 
 function constrainStageObjects(objects) {
   objects.forEach(function(obj) {
-    createjs.util.constrainObjectTo(obj, boundary);
+    constrainObjectTo(obj, boundary);
   });
 }
 
@@ -156,10 +159,7 @@ window.addEventListener("resize", handleResize);
 function handleResize() {
   selectTool.unselect();
   var w = containerElement.clientWidth; // -2 accounts for the border
-  //var h = window.innerHeight-2;
-
   stage.canvas.width = w;
-  //stage.canvas.height = h;
 
   updateBoundary(boundary);
   // TODO: constrain all elements

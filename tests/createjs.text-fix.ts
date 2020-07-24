@@ -7,6 +7,7 @@
  * @see https://github.com/CreateJS/EaselJS/issues/235
  */
 var cache = {};
+//@ts-ignore private method hack
 createjs.Text.prototype._drawTextLine = function(ctx, text, y) {
   this.textBaseline = ctx.textBaseline = "alphabetic";
   if (!(this.font in cache)) {

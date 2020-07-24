@@ -1,7 +1,11 @@
+import { getCanvas } from "@recreatejs/jasmine-pixelmatch/src/canvas-helpers";
+import FreeTransformTool from "freetransform";
+import { imgToImageData, loadImage } from "@recreatejs/jasmine-pixelmatch";
+
 describe("Smoke checks", function() {
   it("is can access createjs and free transform tool", function() {
     expect(createjs).toBeTruthy();
-    expect(createjs.util.FreeTransformTool).toBeTruthy();
+    expect(FreeTransformTool).toBeTruthy();
   });
 });
 
@@ -20,7 +24,7 @@ describe("Free transform tool", function() {
     this.top = new createjs.Container();
     this.stage.addChild(this.top);
 
-    this.selectTool = new createjs.util.FreeTransformTool();
+    this.selectTool = new FreeTransformTool();
     this.top.addChild(this.selectTool);
 
     this.getImageData = () => {

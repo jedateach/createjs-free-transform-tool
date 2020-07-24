@@ -1,6 +1,19 @@
 # TODO
 
+Convert to Typescript?
+
 Update border, and constrain elements
+
+## Transforming withing a container
+
+It is useful to support transforming elements within a container.
+Use case: design area has been resized/zoomed.
+
+Currently the coordinate systems are out, and the boundary mechanism fails too.
+
+Come up with a design / plan...
+
+We might need to introduce functions for transforming through parent layers.
 
 ## Build test infrastructure
 

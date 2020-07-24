@@ -1,3 +1,7 @@
+import "./createjs.text-fix";
+import { getCanvas } from "@recreatejs/jasmine-pixelmatch/src/canvas-helpers";
+import { imgToImageData, loadImage } from "@recreatejs/jasmine-pixelmatch";
+
 describe("Text in EaselJS", function() {
   beforeEach(function() {
     this.canvas = getCanvas(200, 200);
