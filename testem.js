@@ -1,7 +1,7 @@
 const coverageServer = require("./testem-coverage-server");
 
-let chromeArgs = ["--disable-gpu", "--remote-debugging-port=9222"];
-let firefoxArgs = [];
+const chromeArgs = ["--disable-gpu", "--remote-debugging-port=9222"];
+const firefoxArgs = [];
 
 if (process.env.HEADLESS) {
   chromeArgs.unshift("--headless");
@@ -10,6 +10,10 @@ if (process.env.HEADLESS) {
 
 let serve_files = [
   { src: coverageServer.clientFile },
+  {
+    src:
+      "node_modules/@recreatejs/jasmine-pixelmatch/dist/jasmine-pixelmatch.js",
+  },
   { src: "dist/easeljs.js" },
   { src: "dist/createjs.util.FreeTransformTool.instrumented.js" },
   { src: "dist/tests.umd.js" }
