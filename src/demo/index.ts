@@ -4,7 +4,8 @@ import createBitmap from './shapes/bitmap';
 import TransformLayer from './transform-layer';
 import { constrainObjectTo } from "../freetransform/helpers";
 
-let canvas, stage;
+let canvas
+let stage;
 
 let container;
 let transformLayer;
@@ -28,6 +29,10 @@ function init() {
   // define boundary
   boundary = new createjs.Rectangle();
 
+  // container for display objects being transformed
+  container = new createjs.Container();
+  stage.addChildAt(container, 0);
+
   // load the source image:
   const image = new Image();
   image.src = "daisy.png";
@@ -40,15 +45,13 @@ function addSelectableObject(displayObject) {
 }
 
 function handleImageLoad(event) {
-  const image = event.target;
-  container = new createjs.Container();
-  stage.addChildAt(container, 0);
 
   const ellipse = createEllipse();
   ellipse.x = canvas.width / 2;
   ellipse.y = canvas.height / 4;
   addSelectableObject(ellipse);
 
+  const image = event.target;
   const bitmap = createBitmap(image);
   bitmap.x = canvas.width / 2;
   bitmap.y = canvas.height / 6;
@@ -62,6 +65,19 @@ function handleImageLoad(event) {
   handleResize();
 }
 
+const containerElement = document.getElementById("CanvasContainer");
+window.addEventListener("resize", handleResize);
+
+function handleResize() {
+  transformLayer.unselect();
+  const w = containerElement.clientWidth; // -2 accounts for the border
+  stage.canvas.width = w;
+  updateBoundary(boundary);
+  transformLayer.updateBoundary(boundary);
+  constrainStageObjects(container.children);
+  stage.update();
+}
+
 // update boundary, based on canvas size
 function updateBoundary(boundary) {
   const top = canvas.height * 0.1;
@@ -73,20 +89,6 @@ function updateBoundary(boundary) {
     canvas.width - padding * 2,
     canvas.height - padding * 2
   );
-}
-
-const containerElement = document.getElementById("CanvasContainer");
-window.addEventListener("resize", handleResize);
-function handleResize() {
-  transformLayer.unselect();
-  const w = containerElement.clientWidth; // -2 accounts for the border
-  stage.canvas.width = w;
-
-  updateBoundary(boundary);
-  transformLayer.updateBoundary(boundary);
-  constrainStageObjects(container.children);
-
-  stage.update();
 }
 
 function constrainStageObjects(objects) {
