@@ -62,7 +62,7 @@ export default class FreeTransformTool extends createjs.Container {
     });
   }
 
-  addToolTip(shape, name, cursor) {
+  addToolTip(shape, name, cursor) : void {
     shape.on("mouseover", () => {
       this.setTitle(name);
       this.setCursor(cursor);
@@ -73,13 +73,13 @@ export default class FreeTransformTool extends createjs.Container {
     });
   }
 
-  setTitle(title = "") {
+  setTitle(title = "") : void {
     if (this.stage.canvas instanceof HTMLCanvasElement) {
      this.stage.canvas.title = title;
     }
   }
 
-  setCursor(cursor) {
+  setCursor(cursor) : void {
     const cursors = [
       "e-resize",
       "se-resize",
@@ -103,7 +103,7 @@ export default class FreeTransformTool extends createjs.Container {
     }
   }
 
-  createHandle(name, cursor) {
+  createHandle(name, cursor) : createjs.Shape {
     const shape = new createjs.Shape();
     this.addToolTip(shape, name, cursor);
     shape.graphics
@@ -116,7 +116,7 @@ export default class FreeTransformTool extends createjs.Container {
   }
 
   // public methods:
-  select(target) {
+  select(target) : void {
     if (target) {
       // copy object translation/transformation
       this.target = target;
