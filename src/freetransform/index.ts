@@ -308,9 +308,8 @@ export default class FreeTransformTool extends createjs.Container {
             this.target.y
           );
           const rescaleFactor = distEnd / distStart;
-          const updates = {
-            scaleX: targetStart.scaleX * rescaleFactor,
-            x: null,
+          const updates : any = {
+            scaleX: targetStart.scaleX * rescaleFactor
           };
           // constrain to bounds
           if (this.boundary) {
@@ -369,9 +368,8 @@ export default class FreeTransformTool extends createjs.Container {
             this.target.y
           );
           const rescaleFactor = distEnd / distStart;
-          const updates = {
-            scaleY: targetStart.scaleY * rescaleFactor,
-            y: null,
+          const updates : any = {
+            scaleY: targetStart.scaleY * rescaleFactor
           };
           // constrain to bounds
           if (this.boundary) {
@@ -435,11 +433,9 @@ export default class FreeTransformTool extends createjs.Container {
             this.target.y
           );
           const rescaleFactor = distEnd / distStart;
-          const updates = {
+          const updates : any = {
             scaleX: targetStart.scaleX * rescaleFactor,
             scaleY: targetStart.scaleY * rescaleFactor,
-            x: null,
-            y: null,
           };
           // constrain to bounds
           if (this.boundary) {
