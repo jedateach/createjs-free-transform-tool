@@ -1,18 +1,16 @@
-import FreeTransformTool from "freetransform";
+import createEllipse from "./shapes/ellipse";
+import createText from './shapes/text';
+import createBitmap from './shapes/bitmap';
+import TransformLayer from './transform-layer';
 import { constrainObjectTo } from "../freetransform/helpers";
 
 let canvas, stage;
-let update = true;
-
-let boundary;
-let boundaryLine;
-
-let selectTool;
 
 let container;
+let transformLayer;
+let boundary;
 
 function init() {
-  // create stage and point it to the canvas:
   canvas = document.getElementById("Designer");
   stage = new createjs.Stage(canvas);
 
@@ -24,27 +22,11 @@ function init() {
   stage.mouseMoveOutside = true; // keep tracking the mouse even when it leaves the canvas
 
   // set up free transform tool
-  const top = new createjs.Container();
-  top.name = "top";
-  stage.addChild(top);
+  transformLayer = new TransformLayer();
+  stage.addChild(transformLayer);
 
   // define boundary
   boundary = new createjs.Rectangle();
-  updateBoundary(boundary);
-  boundaryLine = new createjs.Shape();
-  top.addChild(boundaryLine);
-
-  const controlsSize = 10 * window.devicePixelRatio;
-  selectTool = new FreeTransformTool(
-    "#057",
-    true,
-    "rgba(255,255,255,0.8)",
-    controlsSize,
-    boundary
-  );
-  selectTool.name = "transform";
-
-  top.addChild(selectTool);
 
   // load the source image:
   const image = new Image();
@@ -52,10 +34,35 @@ function init() {
   image.onload = handleImageLoad;
 }
 
-// function stop() {
-//   createjs.Ticker.removeEventListener("tick", tick);
-// }
+function addSelectableObject(displayObject) {
+  transformLayer.makeSelectable(displayObject);
+  container.addChild(displayObject);
+}
 
+function handleImageLoad(event) {
+  const image = event.target;
+  container = new createjs.Container();
+  stage.addChildAt(container, 0);
+
+  const ellipse = createEllipse();
+  ellipse.x = canvas.width / 2;
+  ellipse.y = canvas.height / 4;
+  addSelectableObject(ellipse);
+
+  const bitmap = createBitmap(image);
+  bitmap.x = canvas.width / 2;
+  bitmap.y = canvas.height / 6;
+  addSelectableObject(bitmap);
+
+  const text = createText();
+  text.x = canvas.width / 2;
+  text.y = canvas.height / 2.3;
+  addSelectableObject(text);
+
+  handleResize();
+}
+
+// update boundary, based on canvas size
 function updateBoundary(boundary) {
   const top = canvas.height * 0.1;
   const left = canvas.width * 0.1;
@@ -68,104 +75,24 @@ function updateBoundary(boundary) {
   );
 }
 
-function drawBoundary() {
-  boundaryLine.graphics
-    .clear()
-    .beginStroke("rgba(100, 100, 100, 0.5)")
-    .setStrokeDash([20, 4])
-    .drawRect(boundary.x, boundary.y, boundary.width, boundary.height);
-}
-
-function constrainStageObjects(objects) {
-  objects.forEach(function(obj) {
-    constrainObjectTo(obj, boundary);
-  });
-}
-
-function handleImageLoad(event) {
-  const image = event.target;
-  container = new createjs.Container();
-  stage.addChildAt(container, 0);
-
-  // Shape
-  const ellipse = new createjs.Shape();
-  ellipse.x = canvas.width / 2;
-  ellipse.y = canvas.height / 4;
-  ellipse.setBounds(0, 0, 200, 300);
-  ellipse.regX = (ellipse.getBounds().width / 2) | 0;
-  ellipse.regY = (ellipse.getBounds().height / 6) | 0;
-  ellipse.graphics
-    .setStrokeStyle(4)
-    .beginRadialGradientFill(["#FFF", "#35E"], [1, 0], 0, 0, 200, 30, -50, 40)
-    .drawEllipse(0, 0, 200, 300);
-  clickToSelect(ellipse);
-  container.addChild(ellipse);
-
-  // Bitmap
-  const bitmap = new createjs.Bitmap(image);
-  bitmap.x = canvas.width / 2;
-  bitmap.y = canvas.height / 6;
-  bitmap.rotation = -25 | 0;
-  bitmap.regX = (bitmap.image.width / 2) | 0;
-  bitmap.regY = (bitmap.image.height / 2) | 0;
-  bitmap.name = "flower";
-  bitmap.cursor = "pointer";
-  clickToSelect(bitmap);
-  container.addChild(bitmap);
-
-  // Text
-  const text = new createjs.Text("Hello\nWorld", "70px Arial", "#052865");
-  const textBounds = text.getBounds();
-  text.regX = textBounds.width / 2;
-  text.regY = textBounds.height / 2;
-  text.outline = 5;
-  text.x = canvas.width / 2;
-  text.y = canvas.height / 2.3;
-  text.rotation = 5 | 0;
-  text.cursor = "pointer";
-
-  const hit = new createjs.Shape();
-  hit.graphics
-    .beginFill("#000")
-    .drawRect(0, 0, text.getBounds().width, text.getBounds().height);
-  text.hitArea = hit;
-  clickToSelect(text);
-  container.addChild(text);
-
-  createjs.Ticker.addEventListener("tick", tick);
-
-  handleResize();
-}
-
-function clickToSelect(displayObject) {
-  displayObject.on("click", function(evt) {
-    evt.stopPropagation();
-    selectTool.select(evt.currentTarget, stage);
-    update = true;
-  });
-}
-
-function tick(event) {
-  // this set makes it so the stage only re-renders when an event handler indicates a change has happened.
-  if (update) {
-    update = false; // only update once
-    stage.update(event);
-  }
-}
-
 const containerElement = document.getElementById("CanvasContainer");
 window.addEventListener("resize", handleResize);
 function handleResize() {
-  selectTool.unselect();
+  transformLayer.unselect();
   const w = containerElement.clientWidth; // -2 accounts for the border
   stage.canvas.width = w;
 
   updateBoundary(boundary);
-  // TODO: constrain all elements
+  transformLayer.updateBoundary(boundary);
   constrainStageObjects(container.children);
 
-  drawBoundary();
   stage.update();
+}
+
+function constrainStageObjects(objects) {
+  objects.forEach(function (obj) {
+    constrainObjectTo(obj, boundary);
+  });
 }
 
 init();
