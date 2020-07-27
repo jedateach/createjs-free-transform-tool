@@ -261,7 +261,7 @@ export default class FreeTransformTool extends createjs.Container {
       }
     });
     // click to deselect
-    this.moveTool.on("click", function (clickEvent: createjs.MouseEvent) {
+    this.moveTool.on("click", (clickEvent: createjs.MouseEvent) => {
       // only deselect if there was very little movement on click
       // which helps on mobile devices, where it's difficult to
       // tap without dragging slightly
