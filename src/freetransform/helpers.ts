@@ -56,3 +56,25 @@ export function constrainObjectTo(obj, rect) {
   obj.scaleX *= newScale.x;
   obj.scaleY *= newScale.y;
 }
+
+export function reorientResizeCursor(cursor: string, rotation: number): string {
+  const resizeCursors = [
+    "e-resize",
+    "se-resize",
+    "s-resize",
+    "sw-resize",
+    "w-resize",
+    "nw-resize",
+    "n-resize",
+    "ne-resize",
+  ];
+  const index = resizeCursors.indexOf(cursor);
+  if (index >= 0) {
+    const angle = 45;
+    rotation = rotation + angle / 2;
+    let newIndex = index + Math.floor(rotation / angle);
+    newIndex = newIndex % resizeCursors.length;
+    return resizeCursors[newIndex];
+  }
+  return cursor;
+}

@@ -1,4 +1,9 @@
-import { constrainRectTo, calcDistance, calcAngleDegrees } from "./helpers";
+import {
+  constrainRectTo,
+  calcDistance,
+  calcAngleDegrees,
+  reorientResizeCursor,
+} from "./helpers";
 
 declare interface DisplayObjectWithSize extends createjs.DisplayObject {
   width: number;
@@ -79,28 +84,11 @@ export default class FreeTransformTool extends createjs.Container {
     }
   }
 
-  setCursor(cursor) : void {
-    const cursors = [
-      "e-resize",
-      "se-resize",
-      "s-resize",
-      "sw-resize",
-      "w-resize",
-      "nw-resize",
-      "n-resize",
-      "ne-resize",
-    ];
-    const index = cursors.indexOf(cursor);
-    if (index >= 0) {
-      const angle = 45;
-      let rotation = this.target.rotation;
-      rotation = rotation + angle / 2;
-      let newIndex = index + Math.floor(rotation / angle);
-      newIndex = newIndex % cursors.length;
-      document.body.style.cursor = cursors[newIndex];
-    } else {
-      document.body.style.cursor = cursor;
-    }
+  setCursor(cursor: string): void {
+    document.body.style.cursor = reorientResizeCursor(
+      cursor,
+      this.target.rotation
+    );
   }
 
   createHandle(name, cursor): createjs.Shape {
