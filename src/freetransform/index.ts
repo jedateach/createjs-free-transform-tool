@@ -105,83 +105,82 @@ export default class FreeTransformTool extends createjs.Container {
 
   // public methods:
   select(target): void {
-    if (target) {
-      // copy object translation/transformation
-      this.target = target;
-      const bounds = target.getBounds();
-      this.width = bounds.width;
-      this.height = bounds.height;
-      this.scaleX = target.scaleX;
-      this.scaleY = target.scaleY;
-      this.x = target.x;
-      this.y = target.y;
-      this.rotation = target.rotation;
-
-      // respect registration point of target
-      this.regX = -this.width / 2 + target.regX;
-      this.regY = -this.height / 2 + target.regY;
-
-      // borders
-      this.border.graphics.clear();
-      if (this.dashed) {
-        this.border.graphics.setStrokeDash([5, 5], 0);
-      }
-      this.border.graphics
-        .beginStroke(this.border.color)
-        .setStrokeStyle(this.controlStrokeThickness, 0, 0, 10, true)
-        .moveTo(-this.width / 2, -this.height / 2)
-        .lineTo(this.width / 2, -this.height / 2)
-        .moveTo(this.width / 2, this.height / 2)
-        .lineTo(-this.width / 2, this.height / 2);
-      if (this.dashed) {
-        this.border.graphics.setStrokeDash([5, 5], 0);
-      }
-      this.border.graphics
-        .setStrokeStyle(this.controlStrokeThickness, 0, 0, 10, true)
-        .moveTo(-this.width / 2, -this.height / 2)
-        .lineTo(-this.width / 2, this.height / 2)
-        .moveTo(this.width / 2, this.height / 2)
-        .lineTo(this.width / 2, -this.height / 2);
-
-      // tools size should stay consistent
-      const toolScaleX = 1 / (this.scaleX * this.stage.scaleX);
-      const toolScaleY = 1 / (this.scaleY * this.stage.scaleY);
-
-      // draw move hit area
-      this.moveHitArea.graphics
-        .clear()
-        .beginFill("#000")
-        .rect(-this.width / 2, -this.height / 2, this.width, this.height);
-
-      // scale tool (bottom right)
-      this.scaleTool.x = bounds.width / 2;
-      this.scaleTool.y = bounds.height / 2;
-      this.scaleTool.scaleX = toolScaleX;
-      this.scaleTool.scaleY = toolScaleY;
-
-      // hScale tool (right edge)
-      this.hScaleTool.x = bounds.width / 2;
-      this.hScaleTool.y = 0;
-      this.hScaleTool.scaleX = toolScaleX;
-      this.hScaleTool.scaleY = toolScaleY;
-
-      // vScale tool (bottom edge)
-      this.vScaleTool.x = 0;
-      this.vScaleTool.y = bounds.height / 2;
-      this.vScaleTool.scaleX = toolScaleX;
-      this.vScaleTool.scaleY = toolScaleY;
-
-      // rotate tool
-      this.rotateTool.x = bounds.width / 2;
-      this.rotateTool.y = -bounds.height / 2;
-      this.rotateTool.scaleX = toolScaleX;
-      this.rotateTool.scaleY = toolScaleY;
-
-      this.visible = true;
-    } else {
+    if (!target) {
       this.unselect();
     }
-    return;
+
+    // copy object translation/transformation
+    this.target = target;
+    const bounds = target.getBounds();
+    this.width = bounds.width;
+    this.height = bounds.height;
+    this.scaleX = target.scaleX;
+    this.scaleY = target.scaleY;
+    this.x = target.x;
+    this.y = target.y;
+    this.rotation = target.rotation;
+
+    // respect registration point of target
+    this.regX = -this.width / 2 + target.regX;
+    this.regY = -this.height / 2 + target.regY;
+
+    // borders
+    this.border.graphics.clear();
+    if (this.dashed) {
+      this.border.graphics.setStrokeDash([5, 5], 0);
+    }
+    this.border.graphics
+      .beginStroke(this.border.color)
+      .setStrokeStyle(this.controlStrokeThickness, 0, 0, 10, true)
+      .moveTo(-this.width / 2, -this.height / 2)
+      .lineTo(this.width / 2, -this.height / 2)
+      .moveTo(this.width / 2, this.height / 2)
+      .lineTo(-this.width / 2, this.height / 2);
+    if (this.dashed) {
+      this.border.graphics.setStrokeDash([5, 5], 0);
+    }
+    this.border.graphics
+      .setStrokeStyle(this.controlStrokeThickness, 0, 0, 10, true)
+      .moveTo(-this.width / 2, -this.height / 2)
+      .lineTo(-this.width / 2, this.height / 2)
+      .moveTo(this.width / 2, this.height / 2)
+      .lineTo(this.width / 2, -this.height / 2);
+
+    // tools size should stay consistent
+    const toolScaleX = 1 / (this.scaleX * this.stage.scaleX);
+    const toolScaleY = 1 / (this.scaleY * this.stage.scaleY);
+
+    // draw move hit area
+    this.moveHitArea.graphics
+      .clear()
+      .beginFill("#000")
+      .rect(-this.width / 2, -this.height / 2, this.width, this.height);
+
+    // scale tool (bottom right)
+    this.scaleTool.x = bounds.width / 2;
+    this.scaleTool.y = bounds.height / 2;
+    this.scaleTool.scaleX = toolScaleX;
+    this.scaleTool.scaleY = toolScaleY;
+
+    // hScale tool (right edge)
+    this.hScaleTool.x = bounds.width / 2;
+    this.hScaleTool.y = 0;
+    this.hScaleTool.scaleX = toolScaleX;
+    this.hScaleTool.scaleY = toolScaleY;
+
+    // vScale tool (bottom edge)
+    this.vScaleTool.x = 0;
+    this.vScaleTool.y = bounds.height / 2;
+    this.vScaleTool.scaleX = toolScaleX;
+    this.vScaleTool.scaleY = toolScaleY;
+
+    // rotate tool
+    this.rotateTool.x = bounds.width / 2;
+    this.rotateTool.y = -bounds.height / 2;
+    this.rotateTool.scaleX = toolScaleX;
+    this.rotateTool.scaleY = toolScaleY;
+
+    this.visible = true;
   }
 
   unselect(): void {
