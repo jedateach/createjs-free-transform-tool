@@ -93,6 +93,14 @@ export default class FreeTransformTool extends createjs.Container {
     }
   }
 
+  private dimHandles() {
+    this.alpha = this.controlsDim;
+  }
+
+  private showHandles() {
+    this.alpha = 1;
+  }
+
   private addToolTip(shape, name, cursor): void {
     shape.on("mouseover", () => {
       this.setTitle(name);
@@ -242,57 +250,66 @@ export default class FreeTransformTool extends createjs.Container {
     let dragDistance = 0;
     const moveTool = new createjs.Shape();
     this.addToolTip(moveTool, "Move", "move");
+
+    let tBounds;
+    let targetStart;
+    let startX;
+    let startY;
+    let scaledReg;
+
     moveTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
-      if (this.target) {
-        const tBounds = this.target.getBounds();
-        const targetStart = this.target.clone();
-        const scaledReg = {
-          x: this.target.regX * this.target.scaleX,
-          y: this.target.regY * this.target.scaleY,
-        };
-        moveTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-          this.alpha = this.controlsDim;
-          const newLocation = {
-            x: targetStart.x + moveEvent.stageX - downEvent.stageX,
-            y: targetStart.y + moveEvent.stageY - downEvent.stageY,
-          };
-          // constrain new location, if there is a boundary
-          if (this.boundary) {
-            const newBounds = new createjs.Rectangle(
-              newLocation.x - scaledReg.x,
-              newLocation.y - scaledReg.y,
-              tBounds.width * this.target.scaleX,
-              tBounds.height * this.target.scaleY
-            );
-            const constrainedBounds = constrainRectTo(newBounds, this.boundary);
-            newLocation.x = constrainedBounds.x + scaledReg.x;
-            newLocation.y = constrainedBounds.y + scaledReg.y;
-          }
-          this.target.set(newLocation);
-          dragDistance = calcDistance(
-            downEvent.stageX,
-            downEvent.stageY,
-            moveEvent.stageX,
-            moveEvent.stageY
-          );
-          this.stage.update();
-        });
-        moveTool.on("pressup", (upEvent: createjs.MouseEvent) => {
-          this.alpha = 1;
-          moveTool.removeAllEventListeners("pressmove");
-          upEvent.stopPropagation();
-          dragDistance = 0;
-          this.stage.update();
-        });
-      }
+      tBounds = this.target.getBounds();
+      targetStart = this.target.clone();
+      startX = downEvent.stageX;
+      startY = downEvent.stageY;
+      scaledReg = {
+        x: this.target.regX * this.target.scaleX,
+        y: this.target.regY * this.target.scaleY,
+      };
     });
+
+    moveTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
+      this.dimHandles();
+      const newLocation = {
+        x: targetStart.x + moveEvent.stageX - startX,
+        y: targetStart.y + moveEvent.stageY - startY,
+      };
+      // constrain new location, if there is a boundary
+      if (this.boundary) {
+        const newBounds = new createjs.Rectangle(
+          newLocation.x - scaledReg.x,
+          newLocation.y - scaledReg.y,
+          tBounds.width * this.target.scaleX,
+          tBounds.height * this.target.scaleY
+        );
+        const constrainedBounds = constrainRectTo(newBounds, this.boundary);
+        newLocation.x = constrainedBounds.x + scaledReg.x;
+        newLocation.y = constrainedBounds.y + scaledReg.y;
+      }
+      this.target.set(newLocation);
+      dragDistance = calcDistance(
+        startX,
+        startY,
+        moveEvent.stageX,
+        moveEvent.stageY
+      );
+      this.stage.update();
+    });
+
+    moveTool.on("pressup", (upEvent: createjs.MouseEvent) => {
+      this.showHandles();
+      upEvent.stopPropagation();
+      dragDistance = 0;
+      this.stage.update();
+    });
+
     // click to deselect
-    moveTool.on("click", (clickEvent: createjs.MouseEvent) => {
+    moveTool.on("click", () => {
       // only deselect if there was very little movement on click
       // which helps on mobile devices, where it's difficult to
       // tap without dragging slightly
-      const movedThreshold = 10;
-      if (dragDistance < movedThreshold) {
+      const MOVED_THRESHOLD = 10;
+      if (dragDistance < MOVED_THRESHOLD) {
         this.unselect();
         this.stage.update();
       }
@@ -306,53 +323,54 @@ export default class FreeTransformTool extends createjs.Container {
   private createHorizontalScaleTool() {
     const hScaleTool = this.createHandle("Stretch", "e-resize");
     hScaleTool.graphics.drawRect(0, 0, this.controlsSize, this.controlsSize);
+
+    let tBounds;
+    let targetStart;
+    let startX;
+    let startY;
+
     hScaleTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
-      if (this.target) {
-        const tBounds = this.target.getBounds();
-        const targetStart = <DisplayObjectWithSize>this.target.clone().set({
-          width: tBounds.width,
-          height: tBounds.height,
-        });
-        hScaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-          this.alpha = this.controlsDim;
-          const distStart = calcDistance(
-            downEvent.stageX,
-            downEvent.stageY,
-            this.target.x,
-            this.target.y
-          );
-          const distEnd = calcDistance(
-            moveEvent.stageX,
-            moveEvent.stageY,
-            this.target.x,
-            this.target.y
-          );
-          const rescaleFactor = distEnd / distStart;
-          const updates: any = {
-            scaleX: targetStart.scaleX * rescaleFactor,
-          };
-          // constrain to bounds
-          if (this.boundary) {
-            const newBounds = new createjs.Rectangle(
-              targetStart.x - targetStart.regX * updates.scaleX,
-              targetStart.y - targetStart.regY * targetStart.scaleY,
-              targetStart.width * updates.scaleX,
-              targetStart.height
-            );
-            const constrainedBounds = constrainRectTo(newBounds, this.boundary);
-            updates.scaleX = constrainedBounds.width / targetStart.width;
-            updates.x = constrainedBounds.x + targetStart.regX * updates.scaleX;
-          }
-          this.target.set(updates);
-          this.stage.update();
-        });
-        hScaleTool.on("pressup", () => {
-          hScaleTool.removeAllEventListeners("pressmove");
-          this.alpha = 1;
-          this.stage.update();
-        });
-      }
+      tBounds = this.target.getBounds();
+      targetStart = <DisplayObjectWithSize>this.target.clone().set({
+        width: tBounds.width,
+        height: tBounds.height,
+      });
+      startX = downEvent.stageX;
+      startY = downEvent.stageY;
     });
+    hScaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
+      this.dimHandles();
+      const distStart = calcDistance(startX, startY, this.x, this.y);
+      const distEnd = calcDistance(
+        moveEvent.stageX,
+        moveEvent.stageY,
+        this.x,
+        this.y
+      );
+      const rescaleFactor = distEnd / distStart;
+      const updates: any = {
+        scaleX: targetStart.scaleX * rescaleFactor,
+      };
+      // constrain to bounds
+      if (this.boundary) {
+        const newBounds = new createjs.Rectangle(
+          targetStart.x - targetStart.regX * updates.scaleX,
+          targetStart.y - targetStart.regY * targetStart.scaleY,
+          targetStart.width * updates.scaleX,
+          targetStart.height
+        );
+        const constrainedBounds = constrainRectTo(newBounds, this.boundary);
+        updates.scaleX = constrainedBounds.width / targetStart.width;
+        updates.x = constrainedBounds.x + targetStart.regX * updates.scaleX;
+      }
+      this.target.set(updates);
+      this.stage.update();
+    });
+    hScaleTool.on("pressup", () => {
+      this.showHandles();
+      this.stage.update();
+    });
+
     return hScaleTool;
   }
 
@@ -360,52 +378,58 @@ export default class FreeTransformTool extends createjs.Container {
   private createVerticalScaleTool() {
     const vScaleTool = this.createHandle("Stretch", "s-resize");
     vScaleTool.graphics.drawRect(0, 0, this.controlsSize, this.controlsSize);
+
+    let tBounds;
+    let targetStart;
+    let startX;
+    let startY;
+
     vScaleTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
-      if (this.target) {
-        const tBounds = this.target.getBounds();
-        const targetStart = <DisplayObjectWithSize>this.target.clone().set({
-          width: tBounds.width,
-          height: tBounds.height,
-        });
-        vScaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-          this.alpha = this.controlsDim;
-          const distStart = calcDistance(
-            downEvent.stageX,
-            downEvent.stageY,
-            this.target.x,
-            this.target.y
-          );
-          const distEnd = calcDistance(
-            moveEvent.stageX,
-            moveEvent.stageY,
-            this.target.x,
-            this.target.y
-          );
-          const rescaleFactor = distEnd / distStart;
-          const updates: any = {
-            scaleY: targetStart.scaleY * rescaleFactor,
-          };
-          // constrain to bounds
-          if (this.boundary) {
-            const newBounds = new createjs.Rectangle(
-              targetStart.x - targetStart.regX * targetStart.scaleX,
-              targetStart.y - targetStart.regY * updates.scaleY,
-              targetStart.width,
-              targetStart.height * updates.scaleY
-            );
-            const constrainedBounds = constrainRectTo(newBounds, this.boundary);
-            updates.scaleY = constrainedBounds.height / targetStart.height;
-            updates.y = constrainedBounds.y + targetStart.regY * updates.scaleY;
-          }
-          this.target.set(updates);
-          this.stage.update();
-        });
-        vScaleTool.on("pressup", () => {
-          vScaleTool.removeAllEventListeners("pressmove");
-          this.alpha = 1;
-          this.stage.update();
-        });
+      tBounds = this.target.getBounds();
+      targetStart = <DisplayObjectWithSize>this.target.clone().set({
+        width: tBounds.width,
+        height: tBounds.height,
+      });
+      startX = downEvent.stageX;
+      startY = downEvent.stageY;
+    });
+    vScaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
+      this.dimHandles();
+      const distStart = calcDistance(
+        startX,
+        startY,
+        this.target.x,
+        this.target.y
+      );
+      const distEnd = calcDistance(
+        moveEvent.stageX,
+        moveEvent.stageY,
+        this.target.x,
+        this.target.y
+      );
+      const rescaleFactor = distEnd / distStart;
+      const updates: any = {
+        scaleY: targetStart.scaleY * rescaleFactor,
+      };
+      // constrain to bounds
+      if (this.boundary) {
+        const newBounds = new createjs.Rectangle(
+          targetStart.x - targetStart.regX * targetStart.scaleX,
+          targetStart.y - targetStart.regY * updates.scaleY,
+          targetStart.width,
+          targetStart.height * updates.scaleY
+        );
+        const constrainedBounds = constrainRectTo(newBounds, this.boundary);
+        updates.scaleY = constrainedBounds.height / targetStart.height;
+        updates.y = constrainedBounds.y + targetStart.regY * updates.scaleY;
       }
+      this.target.set(updates);
+      this.stage.update();
+    });
+
+    vScaleTool.on("pressup", () => {
+      this.dimHandles();
+      this.stage.update();
     });
     return vScaleTool;
   }
@@ -419,55 +443,57 @@ export default class FreeTransformTool extends createjs.Container {
   private createScaleTool() {
     const scaleTool = this.createHandle("Resize", "se-resize");
     scaleTool.graphics.drawRect(0, 0, this.controlsSize, this.controlsSize);
+
+    let tBounds;
+    let targetStart;
+    let startX;
+    let startY;
+
     scaleTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
-      if (this.target) {
-        const tBounds = this.target.getBounds();
-        const targetStart = <DisplayObjectWithSize>this.target.clone().set({
-          width: tBounds.width,
-          height: tBounds.height,
-        });
-        scaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-          this.alpha = this.controlsDim;
-          const distStart = calcDistance(
-            downEvent.stageX,
-            downEvent.stageY,
-            this.target.x,
-            this.target.y
-          );
-          const distEnd = calcDistance(
-            moveEvent.stageX,
-            moveEvent.stageY,
-            this.target.x,
-            this.target.y
-          );
-          const rescaleFactor = distEnd / distStart;
-          const updates: any = {
-            scaleX: targetStart.scaleX * rescaleFactor,
-            scaleY: targetStart.scaleY * rescaleFactor,
-          };
-          // constrain to bounds
-          if (this.boundary) {
-            const newBounds = new createjs.Rectangle(
-              targetStart.x - targetStart.regX * updates.scaleX,
-              targetStart.y - targetStart.regY * updates.scaleY,
-              targetStart.width * updates.scaleX,
-              targetStart.height * updates.scaleY
-            );
-            const constrainedBounds = constrainRectTo(newBounds, this.boundary);
-            updates.scaleX = constrainedBounds.width / targetStart.width;
-            updates.scaleY = constrainedBounds.height / targetStart.height;
-            updates.x = constrainedBounds.x + targetStart.regX * updates.scaleX;
-            updates.y = constrainedBounds.y + targetStart.regY * updates.scaleY;
-          }
-          this.target.set(updates);
-          this.stage.update();
-        });
-        scaleTool.on("pressup", () => {
-          scaleTool.removeAllEventListeners("pressmove");
-          this.alpha = 1;
-          this.stage.update();
-        });
+      tBounds = this.target.getBounds();
+      targetStart = <DisplayObjectWithSize>this.target.clone().set({
+        width: tBounds.width,
+        height: tBounds.height,
+      });
+      startX = downEvent.stageX;
+      startY = downEvent.stageY;
+    });
+
+    scaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
+      this.dimHandles();
+      const distStart = calcDistance(startX, startY, this.x, this.y);
+      const distEnd = calcDistance(
+        moveEvent.stageX,
+        moveEvent.stageY,
+        this.x,
+        this.y
+      );
+      const rescaleFactor = distEnd / distStart;
+      const updates: any = {
+        scaleX: targetStart.scaleX * rescaleFactor,
+        scaleY: targetStart.scaleY * rescaleFactor,
+      };
+      // constrain to bounds
+      if (this.boundary) {
+        const newBounds = new createjs.Rectangle(
+          targetStart.x - targetStart.regX * updates.scaleX,
+          targetStart.y - targetStart.regY * updates.scaleY,
+          targetStart.width * updates.scaleX,
+          targetStart.height * updates.scaleY
+        );
+        const constrainedBounds = constrainRectTo(newBounds, this.boundary);
+        updates.scaleX = constrainedBounds.width / targetStart.width;
+        updates.scaleY = constrainedBounds.height / targetStart.height;
+        updates.x = constrainedBounds.x + targetStart.regX * updates.scaleX;
+        updates.y = constrainedBounds.y + targetStart.regY * updates.scaleY;
       }
+      this.target.set(updates);
+      this.stage.update();
+    });
+
+    scaleTool.on("pressup", () => {
+      this.showHandles();
+      this.stage.update();
     });
     return scaleTool;
   }
@@ -484,39 +510,42 @@ export default class FreeTransformTool extends createjs.Container {
   private createRotateTool() {
     const rotateTool = this.createHandle("Rotate", "pointer");
     rotateTool.graphics.drawEllipse(0, 0, this.controlsSize, this.controlsSize);
+
+    let startRotation;
+    let startX;
+    let startY;
+
     rotateTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
-      if (this.target) {
-        const startRotation = this.target.rotation;
-        rotateTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-          this.alpha = 0.1;
-          // the drag point is relative to the display object x,y position on the stage (it's registration point)
-          const relativeStartPoint = {
-            x: downEvent.stageX - this.target.x,
-            y: downEvent.stageY - this.target.y,
-          };
-          const relativeEndPoint = {
-            x: moveEvent.stageX - this.target.x,
-            y: moveEvent.stageY - this.target.y,
-          };
-          const endAngle = calcAngleDegrees(
-            relativeEndPoint.x,
-            relativeEndPoint.y
-          );
-          const startAngle = calcAngleDegrees(
-            relativeStartPoint.x,
-            relativeStartPoint.y
-          );
-          const deltaAngle = endAngle - startAngle;
-          // TODO: constrain to bounds
-          this.target.rotation = startRotation + deltaAngle;
-          this.stage.update();
-        });
-        rotateTool.on("pressup", () => {
-          rotateTool.removeAllEventListeners("pressmove");
-          this.alpha = 1;
-          this.stage.update();
-        });
-      }
+      startRotation = this.rotation;
+      startX = downEvent.stageX;
+      startY = downEvent.stageY;
+    });
+
+    rotateTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
+      this.dimHandles();
+      // the drag point is relative to the display object x,y position on the stage (it's registration point)
+      const relativeStartPoint = {
+        x: startX - this.x,
+        y: startY - this.y,
+      };
+      const relativeEndPoint = {
+        x: moveEvent.stageX - this.x,
+        y: moveEvent.stageY - this.y,
+      };
+      const endAngle = calcAngleDegrees(relativeEndPoint.x, relativeEndPoint.y);
+      const startAngle = calcAngleDegrees(
+        relativeStartPoint.x,
+        relativeStartPoint.y
+      );
+      const deltaAngle = endAngle - startAngle;
+      // TODO: constrain to bounds
+      this.target.rotation = startRotation + deltaAngle;
+      this.stage.update();
+    });
+
+    rotateTool.on("pressup", () => {
+      this.showHandles();
+      this.stage.update();
     });
     return rotateTool;
   }
