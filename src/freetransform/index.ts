@@ -57,18 +57,27 @@ export default class FreeTransformTool extends createjs.Container {
     this.addChild(this.border);
 
     this.moveTool = this.createMoveTool();
-    this.addChild(this.moveTool);
+    this.addTool(this.moveTool);
     this.scaleTool = this.createScaleTool();
-    this.addChild(this.scaleTool);
+    this.addTool(this.scaleTool);
     this.hScaleTool = this.createHorizontalScaleTool();
-    this.addChild(this.hScaleTool);
+    this.addTool(this.hScaleTool);
     this.vScaleTool = this.createVerticalScaleTool();
-    this.addChild(this.vScaleTool);
+    this.addTool(this.vScaleTool);
     this.rotateTool = this.createRotateTool();
-    this.addChild(this.rotateTool);
+    this.addTool(this.rotateTool);
 
     this.on("tick", () => {
       this.update();
+    });
+  }
+
+  private addTool(tool) {
+    this.addChild(tool);
+    tool.on("mousedown", () => this.dimHandles());
+    tool.on("pressup", () => {
+      this.resetHandles();
+      this.stage.update();
     });
   }
 
@@ -97,7 +106,7 @@ export default class FreeTransformTool extends createjs.Container {
     this.alpha = this.controlsDim;
   }
 
-  private showHandles() {
+  private resetHandles() {
     this.alpha = 1;
   }
 
@@ -269,7 +278,6 @@ export default class FreeTransformTool extends createjs.Container {
     });
 
     moveTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-      this.dimHandles();
       const newLocation = {
         x: targetStart.x + moveEvent.stageX - startX,
         y: targetStart.y + moveEvent.stageY - startY,
@@ -297,10 +305,8 @@ export default class FreeTransformTool extends createjs.Container {
     });
 
     moveTool.on("pressup", (upEvent: createjs.MouseEvent) => {
-      this.showHandles();
       upEvent.stopPropagation();
       dragDistance = 0;
-      this.stage.update();
     });
 
     // click to deselect
@@ -339,7 +345,6 @@ export default class FreeTransformTool extends createjs.Container {
       startY = downEvent.stageY;
     });
     hScaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-      this.dimHandles();
       const distStart = calcDistance(startX, startY, this.x, this.y);
       const distEnd = calcDistance(
         moveEvent.stageX,
@@ -366,10 +371,6 @@ export default class FreeTransformTool extends createjs.Container {
       this.target.set(updates);
       this.stage.update();
     });
-    hScaleTool.on("pressup", () => {
-      this.showHandles();
-      this.stage.update();
-    });
 
     return hScaleTool;
   }
@@ -394,7 +395,6 @@ export default class FreeTransformTool extends createjs.Container {
       startY = downEvent.stageY;
     });
     vScaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-      this.dimHandles();
       const distStart = calcDistance(
         startX,
         startY,
@@ -427,10 +427,6 @@ export default class FreeTransformTool extends createjs.Container {
       this.stage.update();
     });
 
-    vScaleTool.on("pressup", () => {
-      this.dimHandles();
-      this.stage.update();
-    });
     return vScaleTool;
   }
 
@@ -460,7 +456,6 @@ export default class FreeTransformTool extends createjs.Container {
     });
 
     scaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-      this.dimHandles();
       const distStart = calcDistance(startX, startY, this.x, this.y);
       const distEnd = calcDistance(
         moveEvent.stageX,
@@ -491,10 +486,6 @@ export default class FreeTransformTool extends createjs.Container {
       this.stage.update();
     });
 
-    scaleTool.on("pressup", () => {
-      this.showHandles();
-      this.stage.update();
-    });
     return scaleTool;
   }
 
@@ -522,7 +513,6 @@ export default class FreeTransformTool extends createjs.Container {
     });
 
     rotateTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-      this.dimHandles();
       // the drag point is relative to the display object x,y position on the stage (it's registration point)
       const relativeStartPoint = {
         x: startX - this.x,
@@ -543,10 +533,6 @@ export default class FreeTransformTool extends createjs.Container {
       this.stage.update();
     });
 
-    rotateTool.on("pressup", () => {
-      this.showHandles();
-      this.stage.update();
-    });
     return rotateTool;
   }
 }
