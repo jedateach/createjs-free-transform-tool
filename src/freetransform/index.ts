@@ -86,6 +86,7 @@ export default class FreeTransformTool extends createjs.Container {
   private addTool(tool) {
     this.addChild(tool);
     tool.on("mousedown", () => this.dimHandles());
+    tool.on("pressmove", () => this.stage.update());
     tool.on("pressup", () => {
       this.resetHandles();
       this.stage.update();
@@ -300,7 +301,6 @@ export default class FreeTransformTool extends createjs.Container {
         moveEvent.stageX,
         moveEvent.stageY
       );
-      this.stage.update();
     });
 
     moveTool.on("pressup", (upEvent: createjs.MouseEvent) => {
@@ -368,7 +368,6 @@ export default class FreeTransformTool extends createjs.Container {
         updates.x = constrainedBounds.x + targetStart.regX * updates.scaleX;
       }
       this.target.set(updates);
-      this.stage.update();
     });
 
     return hScaleTool;
@@ -423,7 +422,6 @@ export default class FreeTransformTool extends createjs.Container {
         updates.y = constrainedBounds.y + targetStart.regY * updates.scaleY;
       }
       this.target.set(updates);
-      this.stage.update();
     });
 
     return vScaleTool;
@@ -482,7 +480,6 @@ export default class FreeTransformTool extends createjs.Container {
         updates.y = constrainedBounds.y + targetStart.regY * updates.scaleY;
       }
       this.target.set(updates);
-      this.stage.update();
     });
 
     return scaleTool;
@@ -529,7 +526,6 @@ export default class FreeTransformTool extends createjs.Container {
       const deltaAngle = endAngle - startAngle;
       // TODO: constrain to bounds
       this.target.rotation = startRotation + deltaAngle;
-      this.stage.update();
     });
 
     return rotateTool;
