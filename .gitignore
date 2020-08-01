@@ -1,3 +1,7 @@
 node_modules
 package-lock.json
 research
+/dist
+/tmp
+/coverage
+/docs

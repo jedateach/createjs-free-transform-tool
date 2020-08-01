@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "lib": ["es2017", "dom"],
+    "target": "ES5",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "outDir": "dist/esnext",
+    "baseUrl": "./",
+    "paths": {
+      "freetransform": ["src/freetransform"]
+    },
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "importHelpers": true,
+    "noEmitHelpers": true
+  },
+  "typedocOptions": {
+    "inputFiles": "src",
+    "mode": "file",
+    "out": "docs/",
+    "name": "freetransformtool",
+    "theme": "minimal"
+  }
+}

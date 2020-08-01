@@ -1,16 +1,20 @@
-describe("Smoke checks", function() {
-  it("is can access createjs and free transform tool", function() {
+import { getCanvas } from "@recreatejs/jasmine-pixelmatch/src/canvas-helpers";
+import FreeTransformTool from "freetransform";
+import { imgToImageData, loadImage } from "@recreatejs/jasmine-pixelmatch";
+
+describe("Smoke checks", function () {
+  it("is can access createjs and free transform tool", function () {
     expect(createjs).toBeTruthy();
-    expect(createjs.util.FreeTransformTool).toBeTruthy();
+    expect(FreeTransformTool).toBeTruthy();
   });
 });
 
-describe("Free transform tool", function() {
-  beforeEach(function() {
+describe("Free transform tool", function () {
+  beforeEach(function () {
     this.canvas = getCanvas(200, 200);
 
     // Disable anti-aliasing during testing to get around browser inconsistencies
-    let context = this.canvas.getContext("2d");
+    const context = this.canvas.getContext("2d");
     context.imageSmoothingEnabled = false;
 
     this.stage = new createjs.Stage(this.canvas);
@@ -20,7 +24,7 @@ describe("Free transform tool", function() {
     this.top = new createjs.Container();
     this.stage.addChild(this.top);
 
-    this.selectTool = new createjs.util.FreeTransformTool();
+    this.selectTool = new FreeTransformTool();
     this.top.addChild(this.selectTool);
 
     this.getImageData = () => {
@@ -30,8 +34,8 @@ describe("Free transform tool", function() {
     };
   });
 
-  it("can select an ellipse shape", async function() {
-    var ellipse = new createjs.Shape();
+  it("can select an ellipse shape", async function () {
+    const ellipse = new createjs.Shape();
     ellipse.x = this.canvas.width / 2;
     ellipse.y = this.canvas.height / 2;
     ellipse.setBounds(0, 0, 80, 120);
@@ -42,13 +46,13 @@ describe("Free transform tool", function() {
     this.selectTool.select(ellipse);
     this.stage.update();
 
-    let imgData = imgToImageData(await loadImage("img/selected-ellipse.png"));
+    const imgData = imgToImageData(await loadImage("img/selected-ellipse.png"));
 
     expect(this.getImageData()).toVisuallyEqual(imgData);
   });
 
-  it("can select a rotated rectangle", async function() {
-    var rectangle = new createjs.Shape();
+  it("can select a rotated rectangle", async function () {
+    const rectangle = new createjs.Shape();
     rectangle.x = this.canvas.width / 2;
     rectangle.y = this.canvas.height / 2;
     rectangle.setBounds(0, 0, 100, 130);
@@ -60,7 +64,7 @@ describe("Free transform tool", function() {
     this.selectTool.select(rectangle);
     this.stage.update();
 
-    let imgData = imgToImageData(
+    const imgData = imgToImageData(
       await loadImage("img/selected-rotated-rectangle.png")
     );
 
@@ -68,9 +72,9 @@ describe("Free transform tool", function() {
   });
 
   // TODO: this fails on different operating systems that render fonts differently
-  xit("can select text", async function() {
-    var text = new createjs.Text("Hello\nWorld", "40px Arial", "#052865");
-    var textBounds = text.getBounds();
+  xit("can select text", async function () {
+    const text = new createjs.Text("Hello\nWorld", "40px Arial", "#052865");
+    const textBounds = text.getBounds();
     text.regX = textBounds.width / 2;
     text.regY = textBounds.height / 2;
     text.x = this.canvas.width / 2;
@@ -81,7 +85,7 @@ describe("Free transform tool", function() {
     this.selectTool.select(text);
     this.stage.update();
 
-    let imgData = imgToImageData(await loadImage("img/selected-text.png"));
+    const imgData = imgToImageData(await loadImage("img/selected-text.png"));
 
     expect(this.getImageData()).toVisuallyEqual(imgData);
   });

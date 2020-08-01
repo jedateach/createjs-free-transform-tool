@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Tests</title>
+  <script src="/node_modules/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+  <script src="/node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+  <script src="/node_modules/jasmine-core/lib/jasmine-core/boot.js"></script>
+  <script src="/testem.js"></script>
+
+  {{#serve_files}}
+  <script src="{{{src}}}" {{#attrs}} {{&.}}{{/attrs}}></script>
+  {{/serve_files}}
+
+  <link rel="stylesheet" href="/node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
+
+  {{#css_files}}
+  <link rel="stylesheet" href="{{src}}" {{#attrs}} {{&.}}{{/attrs}}>
+  {{/css_files}}
+</head>
+
+<body>
+  <div id="jasmine_content"></div>
+</body>
+{{#footer_scripts}}
+<script src="{{{src}}}" {{#attrs}} {{&.}}{{/attrs}}></script>
+{{/footer_scripts}}
+
+</html>
