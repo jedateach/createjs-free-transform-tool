@@ -4,6 +4,7 @@ import {
   calcAngleDegrees,
   reorientResizeCursor,
 } from "./helpers";
+import { HandlePosition, handlePositionToRectPoint } from "./HandlePosition";
 
 declare interface DisplayObjectWithSize extends createjs.DisplayObject {
   width: number;
@@ -37,6 +38,8 @@ export default class FreeTransformTool extends createjs.Container {
 
   private border = null;
 
+  handles = [];
+
   constructor(
     lineColor = "#4285F4",
     dashed = true,
@@ -58,18 +61,26 @@ export default class FreeTransformTool extends createjs.Container {
 
     this.moveTool = this.createMoveTool();
     this.addTool(this.moveTool);
-    this.scaleTool = this.createScaleTool();
-    this.addTool(this.scaleTool);
-    this.hScaleTool = this.createHorizontalScaleTool();
-    this.addTool(this.hScaleTool);
-    this.vScaleTool = this.createVerticalScaleTool();
-    this.addTool(this.vScaleTool);
-    this.rotateTool = this.createRotateTool();
-    this.addTool(this.rotateTool);
+    this.addHandle(this.createScaleTool(), HandlePosition.BOTTOM_RIGHT);
+    this.addHandle(
+      this.createHorizontalScaleTool(),
+      HandlePosition.MIDDLE_RIGHT
+    );
+    this.addHandle(
+      this.createVerticalScaleTool(),
+      HandlePosition.BOTTOM_CENTER
+    );
+    this.addHandle(this.createRotateTool(), HandlePosition.TOP_RIGHT);
 
     this.on("tick", () => {
       this.update();
     });
+  }
+
+  private addHandle(handle, position: HandlePosition) {
+    handle.position = position;
+    this.handles.push(handle);
+    this.addTool(handle);
   }
 
   private addTool(tool) {
@@ -202,52 +213,40 @@ export default class FreeTransformTool extends createjs.Container {
       bottomEdge,
       leftEdge
     );
-
     // tools size should stay consistent
-    this.repositionTools(leftEdge, topEdge, rightEdge, bottomEdge);
-    this.resizeTools();
-  }
-
-  private resizeTools() {
-    const toolScaleX = 1 / (this.scaleX * this.stage.scaleX);
-    const toolScaleY = 1 / (this.scaleY * this.stage.scaleY);
-    this.scaleTool.scaleX = toolScaleX;
-    this.scaleTool.scaleY = toolScaleY;
-    this.hScaleTool.scaleX = toolScaleX;
-    this.hScaleTool.scaleY = toolScaleY;
-    this.vScaleTool.scaleX = toolScaleX;
-    this.vScaleTool.scaleY = toolScaleY;
-    this.rotateTool.scaleX = toolScaleX;
-    this.rotateTool.scaleY = toolScaleY;
-  }
-
-  private repositionTools(
-    leftEdge: number,
-    topEdge: number,
-    rightEdge: number,
-    bottomEdge: number
-  ) {
     // draw move hit area
     this.moveHitArea.graphics
       .clear()
       .beginFill("#000")
       .rect(leftEdge, topEdge, this.width, this.height);
 
-    // update scale tool (bottom right)
-    this.scaleTool.x = rightEdge;
-    this.scaleTool.y = bottomEdge;
+    const boundsRect = new createjs.Rectangle(
+      leftEdge,
+      topEdge,
+      this.width,
+      this.height
+    );
 
-    // update hScale tool (right middle)
-    this.hScaleTool.x = rightEdge;
-    this.hScaleTool.y = 0;
+    this.repositionHandles(boundsRect);
+    this.resizeHandles();
+  }
 
-    // update vScale tool (bottom middle)
-    this.vScaleTool.x = 0;
-    this.vScaleTool.y = bottomEdge;
+  private resizeHandles() {
+    const toolScaleX = 1 / (this.scaleX * this.stage.scaleX);
+    const toolScaleY = 1 / (this.scaleY * this.stage.scaleY);
+    this.handles.forEach((handle) => {
+      handle.scaleX = toolScaleX;
+      handle.scaleY = toolScaleY;
+    });
+  }
 
-    // update rotate tool
-    this.rotateTool.x = rightEdge;
-    this.rotateTool.y = topEdge;
+  private repositionHandles(boundsRect) {
+    // TODO: reduce memory consumption here
+    this.handles.forEach((handle) => {
+      const point = handlePositionToRectPoint(handle.position, boundsRect);
+      handle.x = point.x;
+      handle.y = point.y;
+    });
   }
 
   /**
