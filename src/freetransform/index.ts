@@ -56,21 +56,51 @@ export default class FreeTransformTool extends createjs.Container {
     this.border.color = lineColor;
     this.addChild(this.border);
 
-    this.createMoveTool();
-    this.createHorizontalScaleTool();
-    this.createVerticalScaleTool();
-    this.createScaleTool();
-    this.createRotateTool();
+    this.moveTool = this.createMoveTool();
+    this.addChild(this.moveTool);
+    this.scaleTool = this.createScaleTool();
+    this.addChild(this.scaleTool);
+    this.hScaleTool = this.createHorizontalScaleTool();
+    this.addChild(this.hScaleTool);
+    this.vScaleTool = this.createVerticalScaleTool();
+    this.addChild(this.vScaleTool);
+    this.rotateTool = this.createRotateTool();
+    this.addChild(this.rotateTool);
 
     this.on("tick", () => {
       this.update();
     });
   }
 
-  addToolTip(shape, name, cursor): void {
+  select(target: DisplayObjectWithSize): void {
+    if (!target) {
+      this.unselect();
+      return;
+    }
+    this.target = target;
+    this.updateTools();
+    this.visible = true;
+  }
+
+  unselect(): void {
+    this.target = null;
+    this.visible = false;
+  }
+
+  update(): void {
+    if (this.target) {
+      this.updateTools();
+    }
+  }
+
+  private addToolTip(shape, name, cursor): void {
     shape.on("mouseover", () => {
       this.setTitle(name);
-      this.setCursor(cursor);
+      let newCursor = cursor;
+      if (this.target) {
+        newCursor = reorientResizeCursor(cursor, this.target.rotation);
+      }
+      this.setCursor(newCursor);
     });
     shape.on("mouseout", () => {
       this.setTitle();
@@ -78,20 +108,17 @@ export default class FreeTransformTool extends createjs.Container {
     });
   }
 
-  setTitle(title = ""): void {
+  private setTitle(title = ""): void {
     if (this.stage.canvas instanceof HTMLCanvasElement) {
       this.stage.canvas.title = title;
     }
   }
 
-  setCursor(cursor: string): void {
-    document.body.style.cursor = reorientResizeCursor(
-      cursor,
-      this.target.rotation
-    );
+  private setCursor(cursor: string): void {
+    document.body.style.cursor = cursor;
   }
 
-  createHandle(name, cursor): createjs.Shape {
+  private createHandle(name, cursor): createjs.Shape {
     const shape = new createjs.Shape();
     this.addToolTip(shape, name, cursor);
     shape.graphics
@@ -143,15 +170,8 @@ export default class FreeTransformTool extends createjs.Container {
       .lineTo(right, top);
   }
 
-  // public methods:
-  select(target: DisplayObjectWithSize): void {
-    if (!target) {
-      this.unselect();
-      return;
-    }
-    this.target = target;
-
-    this.reorientToTarget(target);
+  private updateTools() {
+    this.reorientToTarget(this.target);
 
     // horizontal and vertical edges
     const leftEdge = -this.width / 2;
@@ -167,20 +187,29 @@ export default class FreeTransformTool extends createjs.Container {
     );
 
     // tools size should stay consistent
-    this.updateTools(leftEdge, topEdge, rightEdge, bottomEdge);
-
-    this.visible = true;
+    this.repositionTools(leftEdge, topEdge, rightEdge, bottomEdge);
+    this.resizeTools();
   }
 
-  private updateTools(
+  private resizeTools() {
+    const toolScaleX = 1 / (this.scaleX * this.stage.scaleX);
+    const toolScaleY = 1 / (this.scaleY * this.stage.scaleY);
+    this.scaleTool.scaleX = toolScaleX;
+    this.scaleTool.scaleY = toolScaleY;
+    this.hScaleTool.scaleX = toolScaleX;
+    this.hScaleTool.scaleY = toolScaleY;
+    this.vScaleTool.scaleX = toolScaleX;
+    this.vScaleTool.scaleY = toolScaleY;
+    this.rotateTool.scaleX = toolScaleX;
+    this.rotateTool.scaleY = toolScaleY;
+  }
+
+  private repositionTools(
     leftEdge: number,
     topEdge: number,
     rightEdge: number,
     bottomEdge: number
   ) {
-    const toolScaleX = 1 / (this.scaleX * this.stage.scaleX);
-    const toolScaleY = 1 / (this.scaleY * this.stage.scaleY);
-
     // draw move hit area
     this.moveHitArea.graphics
       .clear()
@@ -190,37 +219,18 @@ export default class FreeTransformTool extends createjs.Container {
     // update scale tool (bottom right)
     this.scaleTool.x = rightEdge;
     this.scaleTool.y = bottomEdge;
-    this.scaleTool.scaleX = toolScaleX;
-    this.scaleTool.scaleY = toolScaleY;
 
     // update hScale tool (right middle)
     this.hScaleTool.x = rightEdge;
     this.hScaleTool.y = 0;
-    this.hScaleTool.scaleX = toolScaleX;
-    this.hScaleTool.scaleY = toolScaleY;
 
     // update vScale tool (bottom middle)
     this.vScaleTool.x = 0;
     this.vScaleTool.y = bottomEdge;
-    this.vScaleTool.scaleX = toolScaleX;
-    this.vScaleTool.scaleY = toolScaleY;
 
     // update rotate tool
     this.rotateTool.x = rightEdge;
     this.rotateTool.y = topEdge;
-    this.rotateTool.scaleX = toolScaleX;
-    this.rotateTool.scaleY = toolScaleY;
-  }
-
-  unselect(): void {
-    this.target = null;
-    this.visible = false;
-  }
-
-  update(): void {
-    if (this.target) {
-      this.select(this.target);
-    }
   }
 
   /**
@@ -229,18 +239,18 @@ export default class FreeTransformTool extends createjs.Container {
    * Click to deselect.
    */
   private createMoveTool() {
-    this.moveTool = new createjs.Shape();
-    this.addToolTip(this.moveTool, "Move", "move");
-    this.moveTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
+    let dragDistance = 0;
+    const moveTool = new createjs.Shape();
+    this.addToolTip(moveTool, "Move", "move");
+    moveTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
       if (this.target) {
-        const tool = downEvent.currentTarget;
         const tBounds = this.target.getBounds();
         const targetStart = this.target.clone();
         const scaledReg = {
           x: this.target.regX * this.target.scaleX,
           y: this.target.regY * this.target.scaleY,
         };
-        tool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
+        moveTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
           this.alpha = this.controlsDim;
           const newLocation = {
             x: targetStart.x + moveEvent.stageX - downEvent.stageX,
@@ -259,7 +269,7 @@ export default class FreeTransformTool extends createjs.Container {
             newLocation.y = constrainedBounds.y + scaledReg.y;
           }
           this.target.set(newLocation);
-          tool.dragDistance = calcDistance(
+          dragDistance = calcDistance(
             downEvent.stageX,
             downEvent.stageY,
             moveEvent.stageX,
@@ -267,49 +277,43 @@ export default class FreeTransformTool extends createjs.Container {
           );
           this.stage.update();
         });
-        tool.on("pressup", (upEvent) => {
+        moveTool.on("pressup", (upEvent: createjs.MouseEvent) => {
           this.alpha = 1;
-          tool.removeAllEventListeners("pressmove");
+          moveTool.removeAllEventListeners("pressmove");
           upEvent.stopPropagation();
-          tool.dragDistance = 0;
+          dragDistance = 0;
           this.stage.update();
         });
       }
     });
     // click to deselect
-    this.moveTool.on("click", (clickEvent: createjs.MouseEvent) => {
+    moveTool.on("click", (clickEvent: createjs.MouseEvent) => {
       // only deselect if there was very little movement on click
       // which helps on mobile devices, where it's difficult to
       // tap without dragging slightly
       const movedThreshold = 10;
-      if (clickEvent.currentTarget.dragDistance < movedThreshold) {
+      if (dragDistance < movedThreshold) {
         this.unselect();
         this.stage.update();
       }
     });
     this.moveHitArea = new createjs.Shape();
-    this.moveTool.hitArea = this.moveHitArea;
-    this.addChild(this.moveTool);
+    moveTool.hitArea = this.moveHitArea;
+    return moveTool;
   }
 
   // init hScale tool
   private createHorizontalScaleTool() {
-    this.hScaleTool = this.createHandle("Stretch", "e-resize");
-    this.hScaleTool.graphics.drawRect(
-      0,
-      0,
-      this.controlsSize,
-      this.controlsSize
-    );
-    this.hScaleTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
+    const hScaleTool = this.createHandle("Stretch", "e-resize");
+    hScaleTool.graphics.drawRect(0, 0, this.controlsSize, this.controlsSize);
+    hScaleTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
       if (this.target) {
-        const tool = downEvent.currentTarget;
         const tBounds = this.target.getBounds();
         const targetStart = <DisplayObjectWithSize>this.target.clone().set({
           width: tBounds.width,
           height: tBounds.height,
         });
-        tool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
+        hScaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
           this.alpha = this.controlsDim;
           const distStart = calcDistance(
             downEvent.stageX,
@@ -342,34 +346,28 @@ export default class FreeTransformTool extends createjs.Container {
           this.target.set(updates);
           this.stage.update();
         });
-        tool.on("pressup", () => {
-          tool.removeAllEventListeners("pressmove");
+        hScaleTool.on("pressup", () => {
+          hScaleTool.removeAllEventListeners("pressmove");
           this.alpha = 1;
           this.stage.update();
         });
       }
     });
-    this.addChild(this.hScaleTool);
+    return hScaleTool;
   }
 
   // init vScale tool
   private createVerticalScaleTool() {
-    this.vScaleTool = this.createHandle("Stretch", "s-resize");
-    this.vScaleTool.graphics.drawRect(
-      0,
-      0,
-      this.controlsSize,
-      this.controlsSize
-    );
-    this.vScaleTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
+    const vScaleTool = this.createHandle("Stretch", "s-resize");
+    vScaleTool.graphics.drawRect(0, 0, this.controlsSize, this.controlsSize);
+    vScaleTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
       if (this.target) {
-        const tool = downEvent.currentTarget;
         const tBounds = this.target.getBounds();
         const targetStart = <DisplayObjectWithSize>this.target.clone().set({
           width: tBounds.width,
           height: tBounds.height,
         });
-        tool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
+        vScaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
           this.alpha = this.controlsDim;
           const distStart = calcDistance(
             downEvent.stageX,
@@ -402,14 +400,14 @@ export default class FreeTransformTool extends createjs.Container {
           this.target.set(updates);
           this.stage.update();
         });
-        tool.on("pressup", () => {
-          tool.removeAllEventListeners("pressmove");
+        vScaleTool.on("pressup", () => {
+          vScaleTool.removeAllEventListeners("pressmove");
           this.alpha = 1;
           this.stage.update();
         });
       }
     });
-    this.addChild(this.vScaleTool);
+    return vScaleTool;
   }
 
   /**
@@ -419,22 +417,16 @@ export default class FreeTransformTool extends createjs.Container {
    * registration point
    */
   private createScaleTool() {
-    this.scaleTool = this.createHandle("Resize", "se-resize");
-    this.scaleTool.graphics.drawRect(
-      0,
-      0,
-      this.controlsSize,
-      this.controlsSize
-    );
-    this.scaleTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
+    const scaleTool = this.createHandle("Resize", "se-resize");
+    scaleTool.graphics.drawRect(0, 0, this.controlsSize, this.controlsSize);
+    scaleTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
       if (this.target) {
-        const tool = downEvent.currentTarget;
         const tBounds = this.target.getBounds();
         const targetStart = <DisplayObjectWithSize>this.target.clone().set({
           width: tBounds.width,
           height: tBounds.height,
         });
-        tool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
+        scaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
           this.alpha = this.controlsDim;
           const distStart = calcDistance(
             downEvent.stageX,
@@ -470,14 +462,14 @@ export default class FreeTransformTool extends createjs.Container {
           this.target.set(updates);
           this.stage.update();
         });
-        tool.on("pressup", () => {
-          tool.removeAllEventListeners("pressmove");
+        scaleTool.on("pressup", () => {
+          scaleTool.removeAllEventListeners("pressmove");
           this.alpha = 1;
           this.stage.update();
         });
       }
     });
-    this.addChild(this.scaleTool);
+    return scaleTool;
   }
 
   /**
@@ -490,18 +482,12 @@ export default class FreeTransformTool extends createjs.Container {
    * Add that angle to the object's start rotation
    */
   private createRotateTool() {
-    this.rotateTool = this.createHandle("Rotate", "pointer");
-    this.rotateTool.graphics.drawEllipse(
-      0,
-      0,
-      this.controlsSize,
-      this.controlsSize
-    );
-    this.rotateTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
+    const rotateTool = this.createHandle("Rotate", "pointer");
+    rotateTool.graphics.drawEllipse(0, 0, this.controlsSize, this.controlsSize);
+    rotateTool.on("mousedown", (downEvent: createjs.MouseEvent) => {
       if (this.target) {
-        const tool = downEvent.currentTarget;
         const startRotation = this.target.rotation;
-        tool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
+        rotateTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
           this.alpha = 0.1;
           // the drag point is relative to the display object x,y position on the stage (it's registration point)
           const relativeStartPoint = {
@@ -525,13 +511,13 @@ export default class FreeTransformTool extends createjs.Container {
           this.target.rotation = startRotation + deltaAngle;
           this.stage.update();
         });
-        tool.on("pressup", () => {
-          tool.removeAllEventListeners("pressmove");
+        rotateTool.on("pressup", () => {
+          rotateTool.removeAllEventListeners("pressmove");
           this.alpha = 1;
           this.stage.update();
         });
       }
     });
-    this.addChild(this.rotateTool);
+    return rotateTool;
   }
 }
