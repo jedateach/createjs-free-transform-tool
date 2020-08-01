@@ -1,8 +1,6 @@
 import FreeTransformTool from "freetransform";
 
-
 export default class TransformLayer extends createjs.Container {
-
   transformTool = null;
   controlsSize = 10 * window.devicePixelRatio;
   boundaryLine;
@@ -32,7 +30,7 @@ export default class TransformLayer extends createjs.Container {
     drawBoundaryLine(this.boundaryLine, boundary);
   }
 
-  makeSelectable(displayObject: createjs.DisplayObject) : void {
+  makeSelectable(displayObject: createjs.DisplayObject): void {
     displayObject.on("click", (evt: createjs.Event) => {
       evt.stopPropagation();
       this.transformTool.select(evt.currentTarget);
@@ -40,18 +38,18 @@ export default class TransformLayer extends createjs.Container {
     });
   }
 
-  unselect() : void {
+  unselect(): void {
     this.transformTool.unselect();
   }
-
 }
 
-function drawBoundaryLine(boundaryLine: createjs.Shape, boundary: createjs.Rectangle) {
-  console.log("drawing boundary...");
+function drawBoundaryLine(
+  boundaryLine: createjs.Shape,
+  boundary: createjs.Rectangle
+) {
   boundaryLine.graphics
     .clear()
     .beginStroke("rgba(100, 100, 100, 0.5)")
     .setStrokeDash([20, 4])
     .drawRect(boundary.x, boundary.y, boundary.width, boundary.height);
 }
-
