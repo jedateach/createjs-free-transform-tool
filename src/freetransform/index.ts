@@ -272,8 +272,8 @@ export default class FreeTransformTool extends createjs.Container {
       startX = downEvent.stageX;
       startY = downEvent.stageY;
       scaledReg = {
-        x: this.target.regX * this.target.scaleX,
-        y: this.target.regY * this.target.scaleY,
+        x: this.target.regX * this.scaleX,
+        y: this.target.regY * this.scaleY,
       };
     });
 
@@ -287,8 +287,8 @@ export default class FreeTransformTool extends createjs.Container {
         const newBounds = new createjs.Rectangle(
           newLocation.x - scaledReg.x,
           newLocation.y - scaledReg.y,
-          tBounds.width * this.target.scaleX,
-          tBounds.height * this.target.scaleY
+          tBounds.width * this.scaleX,
+          tBounds.height * this.scaleY
         );
         const constrainedBounds = constrainRectTo(newBounds, this.boundary);
         newLocation.x = constrainedBounds.x + scaledReg.x;
@@ -393,17 +393,12 @@ export default class FreeTransformTool extends createjs.Container {
       startY = downEvent.stageY;
     });
     vScaleTool.on("pressmove", (moveEvent: createjs.MouseEvent) => {
-      const distStart = calcDistance(
-        startX,
-        startY,
-        this.target.x,
-        this.target.y
-      );
+      const distStart = calcDistance(startX, startY, this.x, this.y);
       const distEnd = calcDistance(
         moveEvent.stageX,
         moveEvent.stageY,
-        this.target.x,
-        this.target.y
+        this.x,
+        this.y
       );
       const rescaleFactor = distEnd / distStart;
       const updates: any = {
